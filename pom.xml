@@ -84,6 +84,7 @@ SOFTWARE.
     </site>
   </distributionManagement>
   <properties>
+    <antlr.version>4.13.1</antlr.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
@@ -191,6 +192,13 @@ SOFTWARE.
       <!-- version from the parent pom -->
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr4-runtime</artifactId>
+      <version>${antlr.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest</artifactId>
@@ -211,6 +219,26 @@ SOFTWARE.
     </dependency>
   </dependencies>
   <build>
+    <plugins>
+      <plugin>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-maven-plugin</artifactId>
+        <version>${antlr.version}</version>
+        <configuration>
+          <sourceDirectory>src/main/antlr</sourceDirectory>
+          <treatWarningsAsErrors>true</treatWarningsAsErrors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>jeo-antlr4</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>antlr4</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>
