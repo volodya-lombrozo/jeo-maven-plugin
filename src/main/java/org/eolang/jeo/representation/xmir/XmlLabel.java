@@ -23,6 +23,11 @@
  */
 package org.eolang.jeo.representation.xmir;
 
+import java.util.Arrays;
+import java.util.List;
+import org.antlr.v4.runtime.CommonToken;
+import org.antlr.v4.runtime.Token;
+import org.eolang.jeo.DecompilerParser;
 import org.eolang.jeo.representation.bytecode.BytecodeMethod;
 import org.w3c.dom.Node;
 
@@ -54,7 +59,11 @@ public final class XmlLabel implements XmlBytecodeEntry {
 
     @Override
     public void writeTo(final BytecodeMethod method) {
-        method.label(this.labels.label(this.node.child("base", "string").text()));
+        method.label(this.labels.label(this.uid()));
+    }
+
+    private String uid() {
+        return this.node.child("base", "string").text();
     }
 
     @Override
@@ -65,6 +74,15 @@ public final class XmlLabel implements XmlBytecodeEntry {
     @Override
     public void replaceArguementsValues(final String old, final String replacement) {
         // Nothing to replace
+    }
+
+    @Override
+    public List<Token> tokens() {
+        final CommonToken commonToken = new CommonToken(DecompilerParser.SVALUE, this.uid());
+        return Arrays.asList(
+            new CommonToken(DecompilerParser.LABEL),
+            commonToken
+        );
     }
 
     @Override

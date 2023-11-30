@@ -23,6 +23,8 @@
  */
 package org.eolang.jeo.representation.xmir;
 
+import java.util.List;
+import org.antlr.v4.runtime.Token;
 import org.eolang.jeo.representation.bytecode.BytecodeMethod;
 import org.w3c.dom.Node;
 
@@ -53,6 +55,8 @@ public interface XmlBytecodeEntry {
      * @param replacement Which value to set instead.
      */
     void replaceArguementsValues(String old, String replacement);
+
+    List<Token> tokens();
 
     /**
      * Xml node.

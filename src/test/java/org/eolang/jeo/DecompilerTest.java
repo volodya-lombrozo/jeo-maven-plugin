@@ -16,13 +16,8 @@ class DecompilerTest {
      *     }
      * }
      */
-    private final String barMethod = "<o abstract=\"\" name=\"bar\">\n"
-        + "            <o base=\"int\" data=\"bytes\" name=\"access\">00 00 00 00 00 00 00 0A</o>\n"
-        + "            <o base=\"string\" data=\"bytes\" name=\"descriptor\">28 44 29 49</o>\n"
-        + "            <o base=\"string\" data=\"bytes\" name=\"signature\"/>\n"
-        + "            <o base=\"tuple\" data=\"tuple\" name=\"exceptions\"/>\n"
-        + "            <o abstract=\"\" name=\"arg__D__0\"/>\n"
-        + "            <o base=\"seq\" name=\"@\">\n"
+    private final String barMethod =
+        "            <o base=\"seq\" name=\"@\">\n"
         + "               <o base=\"label\">\n"
         + "                  <o base=\"string\" data=\"bytes\">35 62 34 39 32 33 64 32 2D 31 30 63 36 2D 34 37 66 38 2D 62 30 66 34 2D 65 62 38 35 34 31 64 30 39 63 34 62</o>\n"
         + "               </o>\n"
@@ -63,7 +58,6 @@ class DecompilerTest {
         + "               </o>\n"
         + "               <o base=\"label\">\n"
         + "                  <o base=\"string\" data=\"bytes\">36 62 31 64 63 35 31 64 2D 37 33 35 32 2D 34 31 35 66 2D 61 65 36 61 2D 33 64 63 33 62 37 36 37 32 30 65 62</o>\n"
-        + "               </o>\n"
         + "            </o>\n"
         + "         </o>";
 

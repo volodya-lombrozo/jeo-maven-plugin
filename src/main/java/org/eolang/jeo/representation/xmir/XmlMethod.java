@@ -100,7 +100,7 @@ public final class XmlMethod {
      * Constructor.
      * @param xml XML node as String.
      */
-    XmlMethod(final String... xml) {
+    public XmlMethod(final String... xml) {
         this(new XMLDocument(String.join("", xml)).node());
     }
 

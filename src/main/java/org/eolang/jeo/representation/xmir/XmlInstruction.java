@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
+import org.antlr.v4.runtime.CommonToken;
+import org.antlr.v4.runtime.Token;
+import org.eolang.jeo.DecompilerParser;
 import org.eolang.jeo.representation.HexData;
 import org.eolang.jeo.representation.bytecode.BytecodeMethod;
 import org.eolang.jeo.representation.directives.DirectivesInstruction;
@@ -111,6 +114,17 @@ public final class XmlInstruction implements XmlBytecodeEntry {
                 }
             }
         );
+    }
+
+    //TODO: HERE THE TOKENS ARE GENERATED.
+    @Override
+    public List<Token> tokens() {
+        final List<Token> res = new ArrayList<>(0);
+        for (final Object argument : arguments()) {
+            final CommonToken tkn = new CommonToken(DecompilerParser.DLOAD, argument.toString());
+            res.add(tkn);
+        }
+        return res;
     }
 
     /**
