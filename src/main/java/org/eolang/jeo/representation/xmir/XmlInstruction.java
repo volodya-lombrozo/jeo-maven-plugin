@@ -34,6 +34,7 @@ import org.eolang.jeo.DecompilerParser;
 import org.eolang.jeo.representation.HexData;
 import org.eolang.jeo.representation.bytecode.BytecodeMethod;
 import org.eolang.jeo.representation.directives.DirectivesInstruction;
+import org.objectweb.asm.Opcodes;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -120,9 +121,34 @@ public final class XmlInstruction implements XmlBytecodeEntry {
     @Override
     public List<Token> tokens() {
         final List<Token> res = new ArrayList<>(0);
-        for (final Object argument : arguments()) {
-            final CommonToken tkn = new CommonToken(DecompilerParser.DLOAD, argument.toString());
-            res.add(tkn);
+        final Object[] arguments = arguments();
+        switch (this.code()) {
+            case Opcodes.DLOAD:
+                res.add(new CommonToken(DecompilerParser.DLOAD));
+                res.add(new CommonToken(DecompilerParser.IVALUE, String.valueOf(arguments[0])));
+                break;
+            case Opcodes.DCONST_0:
+                res.add(new CommonToken(DecompilerParser.DCONST_0));
+                break;
+            case Opcodes.DCMPL:
+                res.add(new CommonToken(DecompilerParser.DCMPL));
+                break;
+            case Opcodes.IFLE:
+                res.add(new CommonToken(DecompilerParser.IFLE));
+                res.add(new CommonToken(DecompilerParser.LABEL, String.valueOf(arguments[0])));
+                break;
+            case Opcodes.ICONST_5:
+                res.add(new CommonToken(DecompilerParser.ICONST_5));
+                break;
+            case Opcodes.IRETURN:
+                res.add(new CommonToken(DecompilerParser.IRETURN));
+                break;
+            case Opcodes.BIPUSH:
+                res.add(new CommonToken(DecompilerParser.BIPUSH));
+                res.add(new CommonToken(DecompilerParser.IVALUE, String.valueOf(arguments[0])));
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + this.code());
         }
         return res;
     }
