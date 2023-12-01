@@ -143,9 +143,28 @@ public final class XmlInstruction implements XmlBytecodeEntry {
             case Opcodes.IRETURN:
                 res.add(new CommonToken(DecompilerParser.IRETURN));
                 break;
+            case Opcodes.RETURN:
+                res.add(new CommonToken(DecompilerParser.RETURN));
+                break;
             case Opcodes.BIPUSH:
                 res.add(new CommonToken(DecompilerParser.BIPUSH));
                 res.add(new CommonToken(DecompilerParser.IVALUE, String.valueOf(arguments[0])));
+                break;
+            case Opcodes.INVOKEVIRTUAL:
+                res.add(new CommonToken(DecompilerParser.INVOKEVIRTUAL));
+                res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[0])));
+                res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[1])));
+                res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[2])));
+                break;
+            case Opcodes.LDC:
+                res.add(new CommonToken(DecompilerParser.LDC));
+                res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[0])));
+                break;
+            case Opcodes.GETSTATIC:
+                res.add(new CommonToken(DecompilerParser.GETSTATIC));
+                res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[0])));
+                res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[1])));
+                res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[2])));
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + this.code());

@@ -92,13 +92,13 @@ public class EoDecompilerListener implements DecompilerListener {
     }
 
     @Override
-    public void enterIreturn(final DecompilerParser.IreturnContext ctx) {
-        System.out.println("\t\tENTER IRETURN");
+    public void enterReturn(final DecompilerParser.ReturnContext ctx) {
+
     }
 
     @Override
-    public void exitIreturn(final DecompilerParser.IreturnContext ctx) {
-        System.out.println("\t\tEXIT IRETURN");
+    public void exitReturn(final DecompilerParser.ReturnContext ctx) {
+
     }
 
     @Override
@@ -109,6 +109,36 @@ public class EoDecompilerListener implements DecompilerListener {
     @Override
     public void exitBipush(final DecompilerParser.BipushContext ctx) {
         System.out.println("\t\tEXIT BIPUSH");
+    }
+
+    @Override
+    public void enterInvokevirtual(final DecompilerParser.InvokevirtualContext ctx) {
+
+    }
+
+    @Override
+    public void exitInvokevirtual(final DecompilerParser.InvokevirtualContext ctx) {
+
+    }
+
+    @Override
+    public void enterLdc(final DecompilerParser.LdcContext ctx) {
+
+    }
+
+    @Override
+    public void exitLdc(final DecompilerParser.LdcContext ctx) {
+
+    }
+
+    @Override
+    public void enterGetstatic(final DecompilerParser.GetstaticContext ctx) {
+
+    }
+
+    @Override
+    public void exitGetstatic(final DecompilerParser.GetstaticContext ctx) {
+
     }
 
     @Override

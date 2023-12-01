@@ -1,6 +1,10 @@
 grammar Decompiler;
 
-tokens{ LABEL, DLOAD, DCONST_0, DCMPL, IFLE, ICONST_5, IRETURN, BIPUSH, SVALUE, IVALUE }
+tokens{
+LABEL, DLOAD, DCONST_0, DCMPL, IFLE, ICONST_5,
+ BIPUSH, SVALUE, IVALUE, INVOKEVIRTUAL, LDC,
+GETSTATIC, RETURN, IRETURN
+}
 
 program
     :   (instruction)* EOF
@@ -13,8 +17,11 @@ instruction
     |   dcmpl
     |   ifle
     |   iconst_5
-    |   ireturn
+    |   return
     |   bipush
+    |   invokevirtual
+    |   ldc
+    |   getstatic
     ;
 
 label
@@ -41,10 +48,23 @@ iconst_5
     :   ICONST_5
     ;
 
-ireturn
-    :   IRETURN
+
+return
+    :   RETURN | IRETURN
     ;
 
 bipush
     :   BIPUSH IVALUE
+    ;
+
+invokevirtual
+    :   INVOKEVIRTUAL SVALUE SVALUE SVALUE
+    ;
+
+ldc
+    :   LDC SVALUE
+    ;
+
+getstatic
+    :   GETSTATIC SVALUE SVALUE SVALUE
     ;
