@@ -110,10 +110,18 @@ class DecompilerTest {
     @Test
     void helloworld() {
         final String res = new Decompiler().decompile(this.helloword);
+        System.out.printf("Final result: %n%s", res);
         MatcherAssert.assertThat(
             "Can't decompile System.out.println(\"Hello, World!\");",
             res,
-            Matchers.equalTo("System.out.println(\"Hello, World!\");")
+            Matchers.equalTo(
+                String.join(
+                    "\n",
+                    "java.lang.System.out.println",
+                    "\t\"Hello, World!\"",
+                    "nop > return"
+                )
+            )
         );
     }
 

@@ -1,14 +1,30 @@
 package org.eolang.jeo;
 
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.objectweb.asm.Type;
 
 public class EoDecompilerListener implements DecompilerListener {
 
+    Deque<String> finalStack = new LinkedList<>();
+    Deque<String> oStack = new LinkedList<>();
+
+
     public String result() {
-        return "yepyep";
+        Collection<String> reversed = new LinkedList<>();
+        while (!this.finalStack.isEmpty()) {
+            reversed.add(this.finalStack.removeLast());
+        }
+        return String.join("\n", reversed);
     }
 
     @Override
@@ -93,7 +109,11 @@ public class EoDecompilerListener implements DecompilerListener {
 
     @Override
     public void enterReturn(final DecompilerParser.ReturnContext ctx) {
-
+        if (this.oStack.isEmpty()) {
+            this.finalStack.push("nop > return");
+        } else {
+            this.finalStack.push(String.format("%s > return", this.oStack.pop()));
+        }
     }
 
     @Override
@@ -113,7 +133,17 @@ public class EoDecompilerListener implements DecompilerListener {
 
     @Override
     public void enterInvokevirtual(final DecompilerParser.InvokevirtualContext ctx) {
-
+        final String method = ctx.SVALUE(1).getText();
+        final String methodDescriptor = ctx.SVALUE(2).getText();
+        final int argumentCount = Type.getArgumentCount(methodDescriptor);
+        String space = "\t";
+        final List<String> args = IntStream.range(0, argumentCount)
+            .mapToObj(i -> this.oStack.pop()).collect(Collectors.toList());
+        final String object = this.oStack.pop();
+        final String invocation = String.format("%s.%s", object, method);
+        final StringBuilder builder = new StringBuilder(invocation).append("\n");
+        args.stream().forEach(arg -> builder.append(String.format("%s%s", space, arg)));
+        this.finalStack.push(builder.toString());
     }
 
     @Override
@@ -123,7 +153,7 @@ public class EoDecompilerListener implements DecompilerListener {
 
     @Override
     public void enterLdc(final DecompilerParser.LdcContext ctx) {
-
+        this.oStack.push(String.format("\"%s\"", ctx.SVALUE().getText()));
     }
 
     @Override
@@ -133,7 +163,12 @@ public class EoDecompilerListener implements DecompilerListener {
 
     @Override
     public void enterGetstatic(final DecompilerParser.GetstaticContext ctx) {
-
+        this.oStack.push(
+            String.format(
+                "%s.%s",
+                ctx.SVALUE(0).getText().replace('/', '.'), ctx.SVALUE(1)
+            )
+        );
     }
 
     @Override
