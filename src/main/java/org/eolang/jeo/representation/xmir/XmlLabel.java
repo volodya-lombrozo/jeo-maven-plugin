@@ -24,7 +24,6 @@
 package org.eolang.jeo.representation.xmir;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.Token;

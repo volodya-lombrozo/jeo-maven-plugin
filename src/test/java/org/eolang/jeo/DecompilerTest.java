@@ -1,9 +1,23 @@
 package org.eolang.jeo;
 
+import com.jcabi.xml.XML;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.tools.ToolProvider;
+import org.eolang.jeo.representation.BytecodeRepresentation;
+import org.eolang.jeo.representation.bytecode.Bytecode;
+import org.eolang.jeo.representation.xmir.XmlMethod;
+import org.eolang.jeo.representation.xmir.XmlProgram;
+import org.eolang.parser.XMIR;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DecompilerTest {
 
@@ -125,5 +139,64 @@ class DecompilerTest {
         );
     }
 
+    @Test
+    void decompileDirectlyFromJavaCode(@TempDir Path temp) throws IOException {
+        this.decompileJavaMethodWithContent(temp, "System.out.println(\"Wake up, Neo...\");");
+    }
 
+    @Test
+    void decompileAssainment(@TempDir Path temp) throws IOException {
+        this.decompileJavaMethodWithContent(temp, "int x = 123;");
+    }
+
+
+
+    private void decompileJavaMethodWithContent(@TempDir Path dir, String... content) throws IOException {
+        final Bytecode application = DecompilerTest.compile(
+            dir,
+            "Application",
+            this.frameApp(content)
+        );
+        final XML representation = new BytecodeRepresentation(application).toEO();
+        System.out.println(new XMIR(representation).toEO());
+        final List<XmlMethod> methods = new XmlProgram(representation).top().methods()
+            .stream().filter(m -> !m.isConstructor()).collect(Collectors.toList());
+        System.out.println("Methods: " + methods.size());
+        System.out.println("DECOMPILED METHOD:\n");
+        System.out.println(new Decompiler().decompile(methods.get(0)));
+    }
+
+
+    private String frameApp(final String... methodContent) {
+        return String.join(
+            "\n",
+            "public class Application{",
+            "public static void main(String... args){",
+            String.join("\n", methodContent),
+            "}",
+            "}"
+
+        );
+    }
+
+    private static Bytecode compile(
+        final Path where,
+        final String name,
+        final String source
+    ) throws IOException {
+        final Path src = where.resolve(String.format("%s.java", name));
+        Files.write(src, source.getBytes(StandardCharsets.UTF_8));
+        ToolProvider.getSystemJavaCompiler().run(
+            System.in,
+            System.out,
+            System.err,
+            "-g:none",
+            "-source", "11",
+            "-target", "11",
+            src.toString()
+        );
+        return new Bytecode(
+            Files.readAllBytes(where.resolve(String.format("%s.class", name)))
+        );
+    }
 }

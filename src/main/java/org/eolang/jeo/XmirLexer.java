@@ -23,6 +23,11 @@ class XmirLexer extends ProgramLexer {
         this.tokens = XmirLexer.parse(input.toString());
     }
 
+    public XmirLexer(final XmlMethod method) {
+        super(CharStreams.fromString(method.toString()));
+        this.tokens = XmirLexer.parse(method);
+    }
+
     @Override
     public Token nextToken() {
         if (this.tokens.isEmpty()) {
@@ -31,13 +36,16 @@ class XmirLexer extends ProgramLexer {
         return this.tokens.pop();
     }
 
-    private static Deque<Token> parse(final String xml) {
+    private static Deque<Token> parse(final XmlMethod method) {
         Deque<Token> res = new LinkedList<>();
-        final XmlMethod method = new XmlMethod(xml);
         for (final XmlBytecodeEntry instruction : method.instructions()) {
             res.addAll(instruction.tokens());
         }
         return res;
+    }
+
+    private static Deque<Token> parse(final String xml) {
+        return parse(new XmlMethod(xml));
     }
 
 }
