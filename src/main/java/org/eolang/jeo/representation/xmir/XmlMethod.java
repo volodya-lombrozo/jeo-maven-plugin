@@ -27,18 +27,13 @@ import com.jcabi.xml.XMLDocument;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.eolang.jeo.representation.HexData;
 import org.eolang.jeo.representation.bytecode.BytecodeMethodProperties;
 import org.eolang.jeo.representation.directives.DirectivesMethodParams;
 import org.objectweb.asm.Opcodes;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xembly.Directives;
 import org.xembly.Xembler;
 
@@ -247,52 +242,6 @@ public final class XmlMethod {
         return res;
     }
 
-    /**
-     * Inline all method invocations.
-     * @param inline Method to inline.
-     */
-    public void inline(final XmlMethod inline) {
-        final List<XmlInvokeVirtual> invocations = this.invokeVirtuals();
-        final Set<XmlBytecodeEntry> ignored = invocations.stream()
-            .map(XmlInvokeVirtual::field)
-            .collect(Collectors.toSet());
-        final Set<XmlBytecodeEntry> where = invocations.stream()
-            .map(XmlInvokeVirtual::invocation)
-            .collect(Collectors.toSet());
-        final List<XmlBytecodeEntry> body = new ArrayList<>(0);
-        for (final XmlBytecodeEntry instruction : this.instructions()) {
-            if (!ignored.contains(instruction)) {
-                if (where.contains(instruction)) {
-                    inline.instructionsToInline().forEach(body::add);
-                } else {
-                    body.add(instruction);
-                }
-            }
-        }
-        this.setInstructions(body);
-    }
-
-    /**
-     * Set instructions for method.
-     * @param updated New instructions.
-     * @todo #176:60min Add unit test for 'setInstructions' method.
-     *  Currently we don't have a unit test for XmlMethod. We should create a testing class
-     *  and test 'setInstructions' method. Don't forget to remove the puzzle for that method.
-     */
-    public void setInstructions(final List<XmlBytecodeEntry> updated) {
-        final Node root = this.sequence().orElseThrow(
-            () -> new IllegalStateException(
-                String.format("Can't find bytecode of the method %s", new XMLDocument(this.node))
-            )
-        );
-        while (root.hasChildNodes()) {
-            root.removeChild(root.getFirstChild());
-        }
-        for (final XmlBytecodeEntry instruction : updated) {
-            root.appendChild(root.getOwnerDocument().adoptNode(instruction.node()));
-        }
-    }
-
     @Override
     public String toString() {
         return new XMLDocument(this.node).toString();
@@ -319,70 +268,5 @@ public final class XmlMethod {
             .map(XMLDocument::new)
             .map(XMLDocument::toString)
             .collect(Collectors.joining());
-    }
-
-    /**
-     * Method instructions that might be inlined.
-     * @return Instructions.
-     * @todo #228:90min. Create more suitable method for determining instructions to inline.
-     *  Currently we are using a method that returns all instructions except return statements,
-     *  which is working for simple examples, but might fail on more complex cases.
-     *  We have to write more tests and create a more suitable method for determining instructions
-     *  to inline.
-     */
-    private Stream<XmlBytecodeEntry> instructionsToInline() {
-        return this.instructions(new Without(Opcodes.RETURN, Opcodes.IRETURN, Opcodes.ALOAD))
-            .stream();
-    }
-
-    /**
-     * Find sequence node.
-     * @return Sequence node.
-     */
-    private Optional<Node> sequence() {
-        Optional<Node> result = Optional.empty();
-        final NodeList children = this.node.getChildNodes();
-        for (int index = 0; index < children.getLength(); ++index) {
-            final Node item = children.item(index);
-            final NamedNodeMap attributes = item.getAttributes();
-            if (attributes == null) {
-                continue;
-            }
-            final Node base = attributes.getNamedItem("base");
-            if (base == null) {
-                continue;
-            }
-            if (base.getNodeValue().equals("seq")) {
-                result = Optional.of(item);
-                break;
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Predicated for filtering commands.
-     * Filters commands that have specified opcodes.
-     * @since 0.1
-     */
-    public static final class Without implements Predicate<XmlBytecodeEntry> {
-
-        /**
-         * Opcodes to exclude.
-         */
-        private final int[] opcodes;
-
-        /**
-         * Constructor.
-         * @param opcodes Opcodes to exclude.
-         */
-        public Without(final int... opcodes) {
-            this.opcodes = Arrays.copyOf(opcodes, opcodes.length);
-        }
-
-        @Override
-        public boolean test(final XmlBytecodeEntry instr) {
-            return Arrays.stream(this.opcodes).noneMatch(instr::hasOpcode);
-        }
     }
 }
