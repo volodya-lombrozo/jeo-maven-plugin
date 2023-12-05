@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -18,6 +19,9 @@ public class EoDecompilerListener implements DecompilerListener {
 
     Deque<String> finalStack = new LinkedList<>();
     Deque<String> oStack = new LinkedList<>();
+
+    AtomicInteger variableCounter = new AtomicInteger(0);
+
     private String space = "\t";
 
 
@@ -111,6 +115,7 @@ public class EoDecompilerListener implements DecompilerListener {
 
     @Override
     public void enterBipush(final DecompilerParser.BipushContext ctx) {
+        this.oStack.push(ctx.IVALUE().getText());
     }
 
     @Override
@@ -162,6 +167,42 @@ public class EoDecompilerListener implements DecompilerListener {
     }
 
     @Override
+    public void enterNew(final DecompilerParser.NewContext ctx) {
+        this.oStack.push(ctx.SVALUE().getText().replace('/', '.'));
+    }
+
+    @Override
+    public void exitNew(final DecompilerParser.NewContext ctx) {
+
+    }
+
+    @Override
+    public void enterStore(final DecompilerParser.StoreContext ctx) {
+        if (!this.oStack.isEmpty()) {
+            final String type = ctx.TYPE().toString();
+            final String n = ctx.IVALUE().getText();
+            this.finalStack.push(String.format("%s > local%s // %s", this.oStack.pop(), n, type));
+        }
+    }
+
+    @Override
+    public void exitStore(final DecompilerParser.StoreContext ctx) {
+
+    }
+
+    @Override
+    public void enterLoad(final DecompilerParser.LoadContext ctx) {
+        // here we can also check the type of loaded variable. Moreover, we can check if variable is already loaded
+        // Since we work with eo, we can omit types, but for the back transformation to EO we need to know the type.
+        this.oStack.push(String.format("local%s", ctx.IVALUE().getText()));
+    }
+
+    @Override
+    public void exitLoad(final DecompilerParser.LoadContext ctx) {
+
+    }
+
+    @Override
     public void enterUndefined(final DecompilerParser.UndefinedContext ctx) {
         this.finalStack.push(new StringBuilder("opcode")
             .append(" > ")
@@ -169,7 +210,7 @@ public class EoDecompilerListener implements DecompilerListener {
             .append("\n")
             .append(
                 IntStream.range(0, ctx.getChildCount() - 1)
-                    .mapToObj(i -> ctx.SVALUE(i).getText())
+                    .mapToObj(i -> this.space + ctx.SVALUE(i).getText())
                     .collect(Collectors.joining("\n"))
             ).toString());
     }

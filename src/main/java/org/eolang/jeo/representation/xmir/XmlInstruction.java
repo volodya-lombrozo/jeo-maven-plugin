@@ -128,6 +128,16 @@ public final class XmlInstruction implements XmlBytecodeEntry {
                 res.add(new CommonToken(DecompilerParser.DLOAD));
                 res.add(new CommonToken(DecompilerParser.IVALUE, String.valueOf(arguments[0])));
                 break;
+            case Opcodes.ILOAD:
+                res.add(new CommonToken(DecompilerParser.LOAD));
+                res.add(new CommonToken(DecompilerParser.TYPE, "int"));
+                res.add(new CommonToken(DecompilerParser.IVALUE, String.valueOf(arguments[0])));
+                break;
+            case Opcodes.ALOAD:
+                res.add(new CommonToken(DecompilerParser.LOAD));
+                res.add(new CommonToken(DecompilerParser.TYPE, "object?"));
+                res.add(new CommonToken(DecompilerParser.IVALUE, String.valueOf(arguments[0])));
+                break;
             case Opcodes.DCONST_0:
                 res.add(new CommonToken(DecompilerParser.DCONST_0));
                 break;
@@ -166,6 +176,11 @@ public final class XmlInstruction implements XmlBytecodeEntry {
                 res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[0])));
                 res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[1])));
                 res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[2])));
+                break;
+            case Opcodes.ISTORE:
+                res.add(new CommonToken(DecompilerParser.STORE));
+                res.add(new CommonToken(DecompilerParser.TYPE, "int"));
+                res.add(new CommonToken(DecompilerParser.IVALUE, String.valueOf(arguments[0])));
                 break;
             default:
                 res.add(new CommonToken(DecompilerParser.UNDEFINED, String.valueOf(this.code())));

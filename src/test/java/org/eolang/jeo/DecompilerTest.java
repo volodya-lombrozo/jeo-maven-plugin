@@ -141,27 +141,42 @@ class DecompilerTest {
 
     @Test
     void decompileDirectlyFromJavaCode(@TempDir Path temp) throws IOException {
-        this.decompileJavaMethodWithContent(temp, "System.out.println(\"Wake up, Neo...\");");
+        this.decompileJavaMethodWithContent(
+            temp,
+            "System.out.println(\"Wake up, Neo...\");",
+            "int x = 123 - 10;"
+        );
     }
 
     @Test
     void decompileAssainment(@TempDir Path temp) throws IOException {
-        this.decompileJavaMethodWithContent(temp, "int x = 123;");
+        this.decompileJavaMethodWithContent(
+            temp,
+            "int x = 123;", "int y = x;"
+        );
     }
 
+    @Test
+    void decompileNew(@TempDir Path temp) throws IOException {
+        this.decompileJavaMethodWithContent(
+            temp,
+            "new StringBuilder(new String(\"good morning\"));"
+        );
+    }
 
-
-    private void decompileJavaMethodWithContent(@TempDir Path dir, String... content) throws IOException {
+    private void decompileJavaMethodWithContent(@TempDir Path dir, String... content
+    ) throws IOException {
         final Bytecode application = DecompilerTest.compile(
             dir,
             "Application",
             this.frameApp(content)
         );
         final XML representation = new BytecodeRepresentation(application).toEO();
+        System.out.println("ORIGINAL EO REPRESENTATION:\n");
         System.out.println(new XMIR(representation).toEO());
         final List<XmlMethod> methods = new XmlProgram(representation).top().methods()
             .stream().filter(m -> !m.isConstructor()).collect(Collectors.toList());
-        System.out.println("Methods: " + methods.size());
+        System.out.println("____________________________________________________\n");
         System.out.println("DECOMPILED METHOD:\n");
         System.out.println(new Decompiler().decompile(methods.get(0)));
     }

@@ -1,9 +1,11 @@
 grammar Decompiler;
 
 tokens{
-LABEL, DLOAD, DCONST_0, DCMPL, IFLE, ICONST_5,
- BIPUSH, SVALUE, IVALUE, INVOKEVIRTUAL, LDC,
-GETSTATIC, RETURN, IRETURN, UNDEFINED
+LABEL,  DCONST_0, DCMPL, IFLE, ICONST_5,
+BIPUSH, SVALUE, IVALUE, INVOKEVIRTUAL,
+LOAD, DLOAD, LDC,
+STORE, TYPE,
+GETSTATIC, RETURN, IRETURN, NEW, UNDEFINED
 }
 
 program
@@ -22,6 +24,9 @@ instruction
     |   invokevirtual
     |   ldc
     |   getstatic
+    |   new
+    |   store
+    |   load
     |   undefined
     ;
 
@@ -68,6 +73,18 @@ ldc
 
 getstatic
     :   GETSTATIC SVALUE SVALUE SVALUE
+    ;
+
+new
+    :   NEW SVALUE
+    ;
+
+store
+    :   STORE TYPE IVALUE
+    ;
+
+load
+    :   LOAD TYPE IVALUE
     ;
 
 undefined
