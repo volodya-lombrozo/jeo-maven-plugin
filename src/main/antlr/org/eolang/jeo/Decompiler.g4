@@ -3,7 +3,7 @@ grammar Decompiler;
 tokens{
 LABEL, DLOAD, DCONST_0, DCMPL, IFLE, ICONST_5,
  BIPUSH, SVALUE, IVALUE, INVOKEVIRTUAL, LDC,
-GETSTATIC, RETURN, IRETURN
+GETSTATIC, RETURN, IRETURN, UNDEFINED
 }
 
 program
@@ -22,6 +22,7 @@ instruction
     |   invokevirtual
     |   ldc
     |   getstatic
+    |   undefined
     ;
 
 label
@@ -67,4 +68,8 @@ ldc
 
 getstatic
     :   GETSTATIC SVALUE SVALUE SVALUE
+    ;
+
+undefined
+    :   UNDEFINED (SVALUE)*
     ;

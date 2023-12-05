@@ -11,12 +11,14 @@ import java.util.stream.IntStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.eolang.jeo.representation.directives.OpcodeName;
 import org.objectweb.asm.Type;
 
 public class EoDecompilerListener implements DecompilerListener {
 
     Deque<String> finalStack = new LinkedList<>();
     Deque<String> oStack = new LinkedList<>();
+    private String space = "\t";
 
 
     public String result() {
@@ -120,13 +122,12 @@ public class EoDecompilerListener implements DecompilerListener {
         final String method = ctx.SVALUE(1).getText();
         final String methodDescriptor = ctx.SVALUE(2).getText();
         final int argumentCount = Type.getArgumentCount(methodDescriptor);
-        String space = "\t";
         final List<String> args = IntStream.range(0, argumentCount)
             .mapToObj(i -> this.oStack.pop()).collect(Collectors.toList());
         final String object = this.oStack.pop();
         final String invocation = String.format("%s.%s", object, method);
         final StringBuilder builder = new StringBuilder(invocation).append("\n");
-        args.stream().forEach(arg -> builder.append(String.format("%s%s", space, arg)));
+        args.stream().forEach(arg -> builder.append(String.format("%s%s", this.space, arg)));
         this.finalStack.push(builder.toString());
     }
 
@@ -157,6 +158,24 @@ public class EoDecompilerListener implements DecompilerListener {
 
     @Override
     public void exitGetstatic(final DecompilerParser.GetstaticContext ctx) {
+
+    }
+
+    @Override
+    public void enterUndefined(final DecompilerParser.UndefinedContext ctx) {
+        this.finalStack.push(new StringBuilder("opcode")
+            .append(" > ")
+            .append(new OpcodeName(Integer.parseInt(ctx.UNDEFINED().getText())).asString())
+            .append("\n")
+            .append(
+                IntStream.range(0, ctx.getChildCount() - 1)
+                    .mapToObj(i -> ctx.SVALUE(i).getText())
+                    .collect(Collectors.joining("\n"))
+            ).toString());
+    }
+
+    @Override
+    public void exitUndefined(final DecompilerParser.UndefinedContext ctx) {
 
     }
 

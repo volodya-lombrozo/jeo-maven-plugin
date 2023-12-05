@@ -25,6 +25,7 @@ package org.eolang.jeo.representation.xmir;
 
 import com.jcabi.xml.XMLDocument;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
@@ -167,7 +168,12 @@ public final class XmlInstruction implements XmlBytecodeEntry {
                 res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[2])));
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + this.code());
+                res.add(new CommonToken(DecompilerParser.UNDEFINED, String.valueOf(this.code())));
+                Arrays.stream(this.arguments())
+                    .map(String::valueOf)
+                    .map(v -> new CommonToken(DecompilerParser.SVALUE, v))
+                    .forEach(res::add);
+//                throw new IllegalStateException("Unexpected value: " + this.code());
         }
         return res;
     }
