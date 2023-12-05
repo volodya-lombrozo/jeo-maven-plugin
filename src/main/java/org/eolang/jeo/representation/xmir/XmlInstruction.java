@@ -167,6 +167,22 @@ public final class XmlInstruction implements XmlBytecodeEntry {
                 res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[1])));
                 res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[2])));
                 break;
+            case Opcodes.INVOKESPECIAL:
+                res.add(new CommonToken(DecompilerParser.INVOKESPECIAL));
+                res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[0])));
+                res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[1])));
+                res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[2])));
+                break;
+            case Opcodes.NEW:
+                res.add(new CommonToken(DecompilerParser.NEW));
+                res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[0])));
+                break;
+            case Opcodes.DUP:
+                res.add(new CommonToken(DecompilerParser.DUP));
+                break;
+            case Opcodes.POP:
+                res.add(new CommonToken(DecompilerParser.POP));
+                break;
             case Opcodes.LDC:
                 res.add(new CommonToken(DecompilerParser.LDC));
                 res.add(new CommonToken(DecompilerParser.SVALUE, String.valueOf(arguments[0])));

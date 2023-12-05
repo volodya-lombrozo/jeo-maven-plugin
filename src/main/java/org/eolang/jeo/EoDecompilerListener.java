@@ -20,13 +20,14 @@ public class EoDecompilerListener implements DecompilerListener {
     Deque<String> finalStack = new LinkedList<>();
     Deque<String> oStack = new LinkedList<>();
 
-    AtomicInteger variableCounter = new AtomicInteger(0);
-
-    private String space = "\t";
+    private String space = "  ";
 
 
     public String result() {
         Collection<String> reversed = new LinkedList<>();
+        while (!oStack.isEmpty()) {
+            finalStack.push(this.oStack.pop());
+        }
         while (!this.finalStack.isEmpty()) {
             reversed.add(this.finalStack.removeLast());
         }
@@ -132,12 +133,46 @@ public class EoDecompilerListener implements DecompilerListener {
         final String object = this.oStack.pop();
         final String invocation = String.format("%s.%s", object, method);
         final StringBuilder builder = new StringBuilder(invocation).append("\n");
-        args.stream().forEach(arg -> builder.append(String.format("%s%s", this.space, arg)));
+        args.stream().forEach(arg -> builder.append(String.format("%s%s", this.space(), arg)));
         this.finalStack.push(builder.toString());
     }
 
     @Override
     public void exitInvokevirtual(final DecompilerParser.InvokevirtualContext ctx) {
+    }
+
+    @Override
+    public void enterInvokespecial(final DecompilerParser.InvokespecialContext ctx) {
+        final String code = ctx.INVOKESPECIAL().getText();
+        final String object = ctx.SVALUE(0).getText();
+        final String mname = ctx.SVALUE(1).getText();
+        final String descriptor = ctx.SVALUE(2).getText();
+        if (mname.equals("<init>")) {
+            final int argumentCount = Type.getArgumentCount(descriptor);
+            final String args = IntStream.range(0, argumentCount)
+                .mapToObj(i -> this.space() + this.oStack.pop())
+                .collect(Collectors.joining("\n"));
+            final String obj = this.oStack.pop();
+            final String res = String.format("%s%n%s%s", obj, this.space(), args);
+
+            this.oStack.push(res);
+        } else {
+            throw new IllegalStateException(
+                String.format(
+                    "Unknown invokespecial instruction code=%s, object=%s, name=%s, descriptor=%s",
+                    code,
+                    object,
+                    mname,
+                    descriptor
+                )
+            );
+        }
+
+
+    }
+
+    @Override
+    public void exitInvokespecial(final DecompilerParser.InvokespecialContext ctx) {
 
     }
 
@@ -168,7 +203,7 @@ public class EoDecompilerListener implements DecompilerListener {
 
     @Override
     public void enterNew(final DecompilerParser.NewContext ctx) {
-        this.oStack.push(ctx.SVALUE().getText().replace('/', '.'));
+        this.oStack.push(ctx.SVALUE().getText().replace('/', '.') + ".new");
     }
 
     @Override
@@ -203,6 +238,28 @@ public class EoDecompilerListener implements DecompilerListener {
     }
 
     @Override
+    public void enterDup(final DecompilerParser.DupContext ctx) {
+//        Doesn't work for some reason?
+        this.oStack.push(this.oStack.peek());
+    }
+
+    @Override
+    public void exitDup(final DecompilerParser.DupContext ctx) {
+
+    }
+
+    @Override
+    public void enterPop(final DecompilerParser.PopContext ctx) {
+//        Pop doesn't work for some reason?
+        this.oStack.pop();
+    }
+
+    @Override
+    public void exitPop(final DecompilerParser.PopContext ctx) {
+
+    }
+
+    @Override
     public void enterUndefined(final DecompilerParser.UndefinedContext ctx) {
         this.finalStack.push(new StringBuilder("opcode")
             .append(" > ")
@@ -210,7 +267,7 @@ public class EoDecompilerListener implements DecompilerListener {
             .append("\n")
             .append(
                 IntStream.range(0, ctx.getChildCount() - 1)
-                    .mapToObj(i -> this.space + ctx.SVALUE(i).getText())
+                    .mapToObj(i -> this.space() + ctx.SVALUE(i).getText())
                     .collect(Collectors.joining("\n"))
             ).toString());
     }
@@ -237,5 +294,9 @@ public class EoDecompilerListener implements DecompilerListener {
     @Override
     public void exitEveryRule(final ParserRuleContext parserRuleContext) {
 
+    }
+
+    private String space() {
+        return this.space;
     }
 }
