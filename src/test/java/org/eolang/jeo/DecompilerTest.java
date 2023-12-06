@@ -153,7 +153,10 @@ class DecompilerTest {
         this.decompileJavaMethodWithContent(
             temp,
             "int x = 123;",
-            "int y = x; new Integer(10);x=x-1;new Integer(x);"
+            "int y = x;",
+            "double z = 10.0d;",
+            "new Integer(10);",
+            "new Integer(x);"
         );
     }
 
@@ -170,6 +173,17 @@ class DecompilerTest {
         this.decompileJavaMethodWithContent(
             temp,
             "new StringBuilder(new StringBuilder(new String(\"good morning\")).toString());"
+        );
+    }
+
+
+    @Test
+    void sandbox(@TempDir Path temp) throws IOException {
+        this.decompileJavaMethodWithContent(
+            temp,
+            "int x = 10;",
+            "new Integer(11);",
+            "new String(new String(\"s\"));"
         );
     }
 

@@ -1,12 +1,15 @@
 package org.eolang.jeo;
 
 
+import com.google.common.base.Strings;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -26,6 +29,12 @@ public class EoDecompilerListener implements DecompilerListener {
      * Operand stack.
      */
     private Deque<String> oStack = new LinkedList<>();
+
+
+    /**
+     * Reference counter.
+     */
+    private AtomicInteger referenceCounter = new AtomicInteger(0);
 
     /**
      * Object reference stack.
@@ -134,15 +143,38 @@ public class EoDecompilerListener implements DecompilerListener {
 
     @Override
     public void enterInvokevirtual(final DecompilerParser.InvokevirtualContext ctx) {
-        final String method = ctx.SVALUE(1).getText();
+        final String methodName = ctx.SVALUE(1).getText();
         final String methodDescriptor = ctx.SVALUE(2).getText();
         final int argumentCount = Type.getArgumentCount(methodDescriptor);
         final List<Printable> args = IntStream.range(0, argumentCount)
-            .mapToObj(i -> this.oStack.pop())
-            .map(this::argument)
+            .mapToObj(i -> {
+                final Printable obj = this.argument(this.oStack.pop());
+                if (obj.equals(this.finalStack.peek())) {
+                    this.finalStack.pop();
+                }
+                return obj;
+            })
             .collect(Collectors.toList());
         final Printable object = this.argument(this.oStack.pop());
-        this.output(new Method(object, method, args));
+        if (object.equals(this.finalStack.peek())) {
+            this.finalStack.pop();
+        }
+        final Method method = new Method(object, methodName, args);
+        this.output(method);
+        final Type returnType = Type.getReturnType(methodDescriptor);
+        if (!returnType.equals(Type.VOID_TYPE)) {
+            final String reference = this.reference(returnType.getClassName());
+            this.oStack.push(reference);
+            this.objectsStack.put(reference, method);
+        }
+    }
+
+    private String reference(final String type) {
+        return String.format("%s%d%s",
+            "&",
+            this.referenceCounter.getAndIncrement(),
+            type.replace('/', '.')
+        );
     }
 
     private Printable argument(final String stackIdentifier) {
@@ -224,7 +256,7 @@ public class EoDecompilerListener implements DecompilerListener {
 
     @Override
     public void enterNew(final DecompilerParser.NewContext ctx) {
-        this.oStack.push(ctx.SVALUE().getText().replace('/', '.') + ".new");
+        this.oStack.push(this.reference(ctx.SVALUE().getText()));
     }
 
     @Override
@@ -237,7 +269,7 @@ public class EoDecompilerListener implements DecompilerListener {
         if (!this.oStack.isEmpty()) {
             final String type = ctx.TYPE().toString();
             final String n = ctx.IVALUE().getText();
-            this.output(String.format("%s > local%s // %s", this.oStack.pop(), n, type));
+            this.output(String.format("%s > local%s", this.oStack.pop(), n));
         }
     }
 
@@ -282,15 +314,6 @@ public class EoDecompilerListener implements DecompilerListener {
 
     @Override
     public void enterUndefined(final DecompilerParser.UndefinedContext ctx) {
-//        this.output(new StringBuilder("opcode")
-//            .append(" > ")
-//            .append(new OpcodeName(Integer.parseInt(ctx.UNDEFINED().getText())).asString())
-//            .append("\n")
-//            .append(
-//                IntStream.range(0, ctx.getChildCount() - 1)
-//                    .mapToObj(i -> this.space() + ctx.SVALUE(i).getText())
-//                    .collect(Collectors.joining("\n"))
-//            ).toString());
         this.output(
             new OpcodeNode(
                 ctx.UNDEFINED().getText(),
@@ -325,11 +348,6 @@ public class EoDecompilerListener implements DecompilerListener {
 
     }
 
-    private String space() {
-        return this.space;
-    }
-
-
     private void output(final String output) {
         this.finalStack.push(new SimpleNode(output));
     }
@@ -361,7 +379,8 @@ public class EoDecompilerListener implements DecompilerListener {
 
         @Override
         public String print(final int indent) {
-            return new Spaces(indent) + "(" + this.target.print(indent) + ")." + this.method + "\n"
+            return new Spaces(indent) + "(" + this.target.print(indent) + ")." + this.method
+                + "\n"
                 +
                 this.args.stream().map(a -> a.print(indent + 2)).collect(Collectors.joining("\n"));
         }
@@ -443,7 +462,7 @@ public class EoDecompilerListener implements DecompilerListener {
 
         @Override
         public String toString() {
-            return IntStream.range(0, this.indent).mapToObj(i -> " ").collect(Collectors.joining());
+            return Strings.repeat(" ", this.indent);
         }
     }
 }
