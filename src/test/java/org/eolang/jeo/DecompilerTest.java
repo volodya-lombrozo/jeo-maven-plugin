@@ -164,6 +164,14 @@ class DecompilerTest {
         );
     }
 
+    @Test
+    void decompileComplex(@TempDir Path temp) throws IOException {
+        this.decompileJavaMethodWithContent(
+            temp,
+            "new StringBuilder(new StringBuilder(new String(\"good morning\")).toString());"
+        );
+    }
+
     private void decompileJavaMethodWithContent(@TempDir Path dir, String... content
     ) throws IOException {
         final Bytecode application = DecompilerTest.compile(
