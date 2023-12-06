@@ -152,7 +152,8 @@ class DecompilerTest {
     void decompileAssainment(@TempDir Path temp) throws IOException {
         this.decompileJavaMethodWithContent(
             temp,
-            "int x = 123;", "int y = x;"
+            "int x = 123;",
+            "int y = x; new Integer(10);x=x-1;new Integer(x);"
         );
     }
 

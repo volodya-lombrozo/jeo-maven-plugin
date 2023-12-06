@@ -137,13 +137,20 @@ public class EoDecompilerListener implements DecompilerListener {
         final String method = ctx.SVALUE(1).getText();
         final String methodDescriptor = ctx.SVALUE(2).getText();
         final int argumentCount = Type.getArgumentCount(methodDescriptor);
-        final List<String> args = IntStream.range(0, argumentCount)
-            .mapToObj(i -> this.oStack.pop()).collect(Collectors.toList());
-        final String object = this.oStack.pop();
-        final String invocation = String.format("%s.%s", object, method);
-        final StringBuilder builder = new StringBuilder(invocation).append("\n");
-        args.stream().forEach(arg -> builder.append(String.format("%s%s", this.space(), arg)));
-        this.output(builder.toString());
+        final List<Printable> args = IntStream.range(0, argumentCount)
+            .mapToObj(i -> this.oStack.pop())
+            .map(this::argument)
+            .collect(Collectors.toList());
+        final Printable object = this.argument(this.oStack.pop());
+        this.output(new Method(object, method, args));
+    }
+
+    private Printable argument(final String stackIdentifier) {
+        if (this.objectsStack.containsKey(stackIdentifier)) {
+            return this.objectsStack.get(stackIdentifier);
+        } else {
+            return new SimpleNode(stackIdentifier);
+        }
     }
 
     @Override
@@ -160,8 +167,7 @@ public class EoDecompilerListener implements DecompilerListener {
             final int argumentCount = Type.getArgumentCount(descriptor);
             final List<Printable> args = IntStream.range(0, argumentCount)
                 .mapToObj(i -> {
-                    final String arg = this.oStack.pop();
-                    final Printable obj = this.objectsStack.getOrDefault(arg, new SimpleNode(arg));
+                    final Printable obj = this.argument(this.oStack.pop());
                     if (obj.equals(this.finalStack.peek())) {
                         this.finalStack.pop();
                     }
@@ -276,15 +282,23 @@ public class EoDecompilerListener implements DecompilerListener {
 
     @Override
     public void enterUndefined(final DecompilerParser.UndefinedContext ctx) {
-        this.output(new StringBuilder("opcode")
-            .append(" > ")
-            .append(new OpcodeName(Integer.parseInt(ctx.UNDEFINED().getText())).asString())
-            .append("\n")
-            .append(
+//        this.output(new StringBuilder("opcode")
+//            .append(" > ")
+//            .append(new OpcodeName(Integer.parseInt(ctx.UNDEFINED().getText())).asString())
+//            .append("\n")
+//            .append(
+//                IntStream.range(0, ctx.getChildCount() - 1)
+//                    .mapToObj(i -> this.space() + ctx.SVALUE(i).getText())
+//                    .collect(Collectors.joining("\n"))
+//            ).toString());
+        this.output(
+            new OpcodeNode(
+                ctx.UNDEFINED().getText(),
                 IntStream.range(0, ctx.getChildCount() - 1)
-                    .mapToObj(i -> this.space() + ctx.SVALUE(i).getText())
-                    .collect(Collectors.joining("\n"))
-            ).toString());
+                    .mapToObj(i -> ctx.SVALUE(i).getText())
+                    .collect(Collectors.toList())
+            )
+        );
     }
 
     @Override
@@ -330,6 +344,29 @@ public class EoDecompilerListener implements DecompilerListener {
         String print(int indent);
     }
 
+    private static class Method implements Printable {
+        private final Printable target;
+        private final String method;
+        private final List<Printable> args;
+
+        public Method(final Printable target, final String method, Printable... args) {
+            this(target, method, Arrays.asList(args));
+        }
+
+        public Method(final Printable target, final String method, final List<Printable> args) {
+            this.target = target;
+            this.method = method;
+            this.args = args;
+        }
+
+        @Override
+        public String print(final int indent) {
+            return new Spaces(indent) + "(" + this.target.print(indent) + ")." + this.method + "\n"
+                +
+                this.args.stream().map(a -> a.print(indent + 2)).collect(Collectors.joining("\n"));
+        }
+    }
+
 
     private static class Constructor implements Printable {
         private final String type;
@@ -349,6 +386,36 @@ public class EoDecompilerListener implements DecompilerListener {
             return new Spaces(indent) + this.type.replace('/', '.') + ".new\n" +
                 this.args.stream().map(a -> a.print(indent + 2))
                     .collect(Collectors.joining("\n"));
+        }
+    }
+
+    private static class OpcodeNode implements Printable {
+
+        private final String opcode;
+        private final List<String> arguments;
+
+        public OpcodeNode(final String opcode, final List<String> arguments) {
+            this.opcode = opcode;
+            this.arguments = arguments;
+        }
+
+        private String args(int indent) {
+            if (this.arguments.isEmpty()) {
+                return "";
+            }
+            return this.arguments.stream()
+                .map(arg -> new Spaces(indent + 2) + arg)
+                .collect(Collectors.joining("\n", "\n", ""));
+        }
+
+        @Override
+        public String print(final int indent) {
+            return String.format(
+                "%sopcode > %s%s",
+                new Spaces(indent),
+                new OpcodeName(Integer.parseInt(this.opcode)).asString(),
+                this.args(indent)
+            );
         }
     }
 
