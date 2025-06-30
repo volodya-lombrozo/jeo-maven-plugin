@@ -72,35 +72,40 @@ public final class XmlValue {
      * @return Object.
      */
     public Object object() {
-        final String base = new XmlClosedObject(this.node).base();
+        final String base = this.base();
         final Object res;
         if (XmlValue.isBoolean(base)) {
-            res = base.equals(XmlValue.TRUE);
+            res = this.parseBoolean();
         } else {
             Codec codec = new EoCodec();
-            if (!XmlValue.NUMBER.equals(base)) {
+            if (!this.node.child("o").hasAttribute("base", new EoFqn("number").fqn())) {
                 codec = new PlainLongCodec(codec);
             }
-            final int last = base.lastIndexOf('.');
-            final String pure;
-            if (last == -1) {
-                pure = base;
-            } else {
-                pure = base.substring(last + 1);
-            }
-            res = new BytecodeBytes(pure, this.bytes()).object(codec);
+            res = new BytecodeBytes(base, this.bytes()).object(codec);
         }
         return res;
     }
 
-    /**
-     * Object base.
-     * @param base Object 'base' attribute value.
-     * @return True if it's boolean, false otherwise.
-     */
     private static boolean isBoolean(final String base) {
-        return XmlValue.TRUE.equals(base) || XmlValue.FALSE.equals(base);
+        return "true".equals(base) || "false".equals(base);
     }
+
+    /**
+     * Parse boolean value.
+     * @return Boolean.
+     */
+    private Object parseBoolean() {
+        return this.node.hasAttribute("base", new EoFqn("true").fqn());
+    }
+
+//    /**
+//     * Object base.
+//     * @param base Object 'base' attribute value.
+//     * @return True if it's boolean, false otherwise.
+//     */
+//    private static boolean isBoolean(final String base) {
+//        return XmlValue.TRUE.equals(base) || XmlValue.FALSE.equals(base);
+//    }
 
     /**
      * Convert hex string to a byte array.
@@ -136,4 +141,27 @@ public final class XmlValue {
         ).replaceAll("");
     }
 
+    /**
+     * Get the type of the object without a package.
+     * @return Type without package.
+     */
+    private String base() {
+        final String base = this.node.attribute("base")
+            .orElseThrow(
+                () -> new IllegalStateException(
+                    String.format(
+                        "'%s' is not an argument because it doesn't have 'base' attribute",
+                        this.node
+                    )
+                )
+            );
+        final String result;
+        final int last = base.lastIndexOf('.');
+        if (last == -1) {
+            result = base;
+        } else {
+            result = base.substring(last + 1);
+        }
+        return result;
+    }
 }
