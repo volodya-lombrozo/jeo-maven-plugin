@@ -23,7 +23,7 @@ public final class XmlAttribute {
     /**
      * XML node of an attribute.
      */
-    private final XmlNode node;
+    private final XmlClosedObject node;
 
     /**
      * Constructor.
@@ -38,7 +38,7 @@ public final class XmlAttribute {
      * @param node XML node.
      */
     XmlAttribute(final XmlNode node) {
-        this.node = node;
+        this.node = new XmlClosedObject(node);
     }
 
     /**
@@ -46,34 +46,29 @@ public final class XmlAttribute {
      * @return Attribute.
      */
     public BytecodeAttribute attribute() {
-        final String base = this.node.attribute("base")
-            .orElseThrow(
-                () -> new IllegalArgumentException(
-                    String.format("Attribute base is missing in XML node %s", this.node)
-                )
-            );
+        final String base = this.node.base();
         final BytecodeAttribute result;
         if (new JeoFqn("inner-class").fqn().equals(base)) {
             result = new InnerClass(
-                Optional.ofNullable(this.node.children().collect(Collectors.toList()).get(0))
+                this.node.child(0)
                     .map(XmlOperand::new)
                     .map(XmlOperand::asObject)
                     .map(String.class::cast)
                     .filter(s -> !s.isEmpty())
                     .orElse(null),
-                Optional.ofNullable(this.node.children().collect(Collectors.toList()).get(1))
+                this.node.child(1)
                     .map(XmlOperand::new)
                     .map(XmlOperand::asObject)
                     .map(String.class::cast)
                     .filter(s -> !s.isEmpty())
                     .orElse(null),
-                Optional.ofNullable(this.node.children().collect(Collectors.toList()).get(2))
+                this.node.child(2)
                     .map(XmlOperand::new)
                     .map(XmlOperand::asObject)
                     .map(String.class::cast)
                     .filter(s -> !s.isEmpty())
                     .orElse(null),
-                Optional.ofNullable(this.node.children().collect(Collectors.toList()).get(3))
+                this.node.child(3)
                     .map(XmlOperand::new)
                     .map(XmlOperand::asObject)
                     .map(Integer.class::cast)

@@ -202,7 +202,7 @@ public final class XmlMethod {
      */
     private static XmlBytecodeEntry toEntry(final XmlNode node) {
         final XmlBytecodeEntry result;
-        final Optional<String> base = node.attribute("base");
+        final Optional<String> base = new XmlClosedObject(node).optbase();
         if (base.isPresent() && new JeoFqn("label").fqn().equals(base.get())) {
             result = new XmlLabel(node);
         } else if (base.isPresent() && new JeoFqn("frame").fqn().equals(base.get())) {

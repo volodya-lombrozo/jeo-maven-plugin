@@ -36,15 +36,7 @@ public final class XmlOperand {
      */
     @EqualsAndHashCode.Include
     public Object asObject() {
-        final String base = this.raw.attribute("base")
-            .orElseThrow(
-                () -> new IllegalStateException(
-                    String.format(
-                        "'%s' is not an argument because it doesn't have 'base' attribute",
-                        this.raw
-                    )
-                )
-            );
+        final String base = new XmlClosedObject(this.raw).base();
         final Object result;
         if (new JeoFqn("handle").fqn().equals(base)) {
             result = new XmlHandler(this.raw).bytecode().asHandle();

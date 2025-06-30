@@ -34,7 +34,6 @@ public final class XmlParams {
     public BytecodeMethodParameters params() {
         return new BytecodeMethodParameters(
             this.node.children()
-                .filter(element -> element.hasAttribute("base", new JeoFqn("param").fqn()))
                 .map(XmlParam::new)
                 .map(XmlParam::bytecode)
                 .collect(Collectors.toList())
