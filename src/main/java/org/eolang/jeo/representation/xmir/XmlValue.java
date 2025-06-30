@@ -81,23 +81,30 @@ public final class XmlValue {
             if (!this.node.child("o").hasAttribute("base", new EoFqn("number").fqn())) {
                 codec = new PlainLongCodec(codec);
             }
-            res = new BytecodeBytes(base, this.bytes()).object(codec);
+            final String result;
+            final int last = base.lastIndexOf('.');
+            if (last == -1) {
+                result = base;
+            } else {
+                result = base.substring(last + 1);
+            }
+            res = new BytecodeBytes(result, this.bytes()).object(codec);
         }
         return res;
     }
 
-    private static boolean isBoolean(final String base) {
-        return "true".equals(base) || "false".equals(base);
-    }
-
-    //    /**
-//     * Object base.
-//     * @param base Object 'base' attribute value.
-//     * @return True if it's boolean, false otherwise.
-//     */
 //    private static boolean isBoolean(final String base) {
-//        return XmlValue.TRUE.equals(base) || XmlValue.FALSE.equals(base);
+//        return "true".equals(base) || "false".equals(base);
 //    }
+
+        /**
+     * Object base.
+     * @param base Object 'base' attribute value.
+     * @return True if it's boolean, false otherwise.
+     */
+    private static boolean isBoolean(final String base) {
+        return XmlValue.TRUE.equals(base) || XmlValue.FALSE.equals(base);
+    }
 
     /**
      * Convert hex string to a byte array.
@@ -147,13 +154,14 @@ public final class XmlValue {
                     )
                 )
             );
-        final String result;
-        final int last = base.lastIndexOf('.');
-        if (last == -1) {
-            result = base;
-        } else {
-            result = base.substring(last + 1);
-        }
-        return result;
+        return base;
+//        final String result;
+//        final int last = base.lastIndexOf('.');
+//        if (last == -1) {
+//            result = base;
+//        } else {
+//            result = base.substring(last + 1);
+//        }
+//        return result;
     }
 }
