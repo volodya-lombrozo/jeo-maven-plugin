@@ -5,7 +5,6 @@
 package org.eolang.jeo.representation.xmir;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.eolang.jeo.representation.bytecode.BytecodeAttribute;
 import org.eolang.jeo.representation.bytecode.BytecodeLabel;
 import org.eolang.jeo.representation.bytecode.LocalVariable;

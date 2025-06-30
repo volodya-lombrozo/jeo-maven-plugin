@@ -6,7 +6,6 @@ package org.eolang.jeo.representation.xmir;
 
 import java.util.stream.Collectors;
 import org.eolang.jeo.representation.bytecode.BytecodeMethodParameters;
-import org.eolang.jeo.representation.directives.JeoFqn;
 
 /**
  * XML method params.

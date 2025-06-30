@@ -9,68 +9,71 @@ import org.xembly.Directive;
 import org.xembly.Directives;
 
 /**
- * EO closed object directives.
+ * Directives that represent an abstract EO object.
  * <p>
- * It is the simples representation of an EO object as a closes object which means it
- * has 'as' ans 'base' attributes and might have 'name' attribute.
- * <a href="https://github.com/objectionary/jeo-maven-plugin/issues/1130">see for more info</a>
+ * This is similar to {@link DirectivesClosedObject}, the main difference is that
+ * it keeps the 'base' attribute as a first EO attribute, instead of a XML attribute (base=x).
  * </p>
+ * <a href="https://github.com/objectionary/jeo-maven-plugin/issues/1130">read more</a>
  * @since 0.11.0
  */
-public final class DirectivesClosedObject implements Iterable<Directive> {
+public final class DirectivesAbsractObject implements Iterable<Directive> {
 
     /**
-     * The name of the closed object.
+     * The name of the abstract object.
      */
     private final String base;
 
     /**
-     * Attribute 'as' of the closed object.
+     * Attribute 'as' of the abstract object.
      * @checkstyle MemberNameCheck (2 lines)
      */
     private final String as;
 
     /**
-     * Attribute 'name' of the closed object.
+     * Attribute 'name' of the abstract object.
      */
     private final String name;
 
     /**
-     * Inner components of the closed object.
+     * Inner components of the abstract object.
      */
     private final Iterable<Directive> internal;
 
     /**
      * Constructor.
-     * @param base The 'base' attribute of the closed object.
-     * @param internal Inner components of the closed object.
+     * @param base The 'base' attribute of the abstract object.
+     * @param internal Inner components of the abstract object.
      */
-    DirectivesClosedObject(final String base, final Iterable<Directive> internal) {
+    DirectivesAbsractObject(final String base, final Iterable<Directive> internal) {
         this(base, "", internal);
     }
 
     /**
      * Constructor.
-     * @param base The 'base' attribute of the closed object.
-     * @param as The 'as' attribute of the closed object.
-     * @param internal Inner components of the closed object.
+     * @param base The 'base' attribute of the abstract object.
+     * @param as The 'as' attribute of the abstract object.
+     * @param directives Inner components of the abstract object.
      * @checkstyle ParameterNameCheck (5 lines)
      */
-    DirectivesClosedObject(
-        final String base, final String as, final Iterable<Directive> internal) {
-        this(base, as, "", internal);
+    DirectivesAbsractObject(
+        final String base,
+        final String as,
+        final Iterable<Directive> directives
+    ) {
+        this(base, as, "", directives);
     }
 
     /**
      * Constructor.
-     * @param base The 'base' attribute of the closed object.
-     * @param as The 'as' attribute of the closed object.
-     * @param name The 'name' attribute of the closed object.
-     * @param internal Inner components of the closed object.
+     * @param base The 'base' attribute of the abstract object.
+     * @param as The 'as' attribute of the abstract object.
+     * @param name The 'name' attribute of the abstract object.
+     * @param internal Inner components of the abstract object.
      * @checkstyle ParameterNameCheck (5 lines)
      * @checkstyle ParameterNumberCheck (5 lines)
      */
-    DirectivesClosedObject(
+    DirectivesAbsractObject(
         final String base,
         final String as,
         final String name,
@@ -91,7 +94,7 @@ public final class DirectivesClosedObject implements Iterable<Directive> {
         if (!this.name.isEmpty()) {
             directives.attr("name", this.name);
         }
-        directives.attr("base", this.base);
+        directives.append(new DirectivesEoObject("base", this.base));
         if (this.internal.iterator().hasNext()) {
             directives.append(this.internal);
         }

@@ -37,7 +37,7 @@ public final class XmlClass {
     /**
      * Field base full qualified name.
      */
-    private static final String FIELD =  new JeoFqn("field").fqn();
+    private static final String FIELD = new JeoFqn("field").fqn();
 
     /**
      * Class node from entire XML.

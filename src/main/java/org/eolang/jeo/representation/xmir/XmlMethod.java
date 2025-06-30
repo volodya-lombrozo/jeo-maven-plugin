@@ -43,7 +43,7 @@ public final class XmlMethod {
     /**
      * Params fully qualified name.
      */
-    private static final String PARAMS = new JeoFqn("params").fqn();
+    private static final String PARAMS_BASE = new JeoFqn("params").fqn();
 
     /**
      * Annotation default value fully qualified name.
@@ -365,11 +365,10 @@ public final class XmlMethod {
      */
     private BytecodeMethodParameters params() {
         return this.node.children()
-            .filter(child -> XmlMethod.PARAMS.equals(new XmlClosedObject(child).base()))
+            .filter(child -> XmlMethod.PARAMS_BASE.equals(new XmlClosedObject(child).base()))
             .findFirst()
             .map(XmlParams::new).map(XmlParams::params)
             .orElse(new BytecodeMethodParameters());
-
     }
 
     /**
