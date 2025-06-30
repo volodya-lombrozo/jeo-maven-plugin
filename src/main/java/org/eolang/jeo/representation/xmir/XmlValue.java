@@ -147,23 +147,6 @@ public final class XmlValue {
      * @return Type without package.
      */
     private String base() {
-        final String base = this.node.attribute("base")
-            .orElseThrow(
-                () -> new IllegalStateException(
-                    String.format(
-                        "'%s' is not an argument because it doesn't have 'base' attribute",
-                        this.node
-                    )
-                )
-            );
-        return base;
-//        final String result;
-//        final int last = base.lastIndexOf('.');
-//        if (last == -1) {
-//            result = base;
-//        } else {
-//            result = base.substring(last + 1);
-//        }
-//        return result;
+        return new XmlClosedObject(this.node).base();
     }
 }
