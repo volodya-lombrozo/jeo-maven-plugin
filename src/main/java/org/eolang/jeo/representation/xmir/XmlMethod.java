@@ -41,6 +41,16 @@ import org.xembly.Xembler;
 public final class XmlMethod {
 
     /**
+     * Params fully qualified name.
+     */
+    private static final String PARAMS = new JeoFqn("params").fqn();
+
+    /**
+     * Annotation default value fully qualified name.
+     */
+    private static final String ADEFVALUE = new JeoFqn("annotation-default-value").fqn();
+
+    /**
      * Undefined value.
      * Max stack and locals need to be recomputed.
      */
@@ -343,7 +353,9 @@ public final class XmlMethod {
      * @return Optional XMIR of the default value.
      */
     private Optional<XmlDefaultValue> defvalue() {
-        return this.node.optchild("base", new JeoFqn("annotation-default-value").fqn())
+        return this.node.children()
+            .filter(child -> XmlMethod.ADEFVALUE.equals(new XmlClosedObject(child).base()))
+            .findFirst()
             .map(XmlDefaultValue::new);
     }
 
@@ -352,9 +364,12 @@ public final class XmlMethod {
      * @return Parameters.
      */
     private BytecodeMethodParameters params() {
-        return this.node.optchild("base", new JeoFqn("params").fqn())
+        return this.node.children()
+            .filter(child -> XmlMethod.PARAMS.equals(new XmlClosedObject(child).base()))
+            .findFirst()
             .map(XmlParams::new).map(XmlParams::params)
             .orElse(new BytecodeMethodParameters());
+
     }
 
     /**
