@@ -94,7 +94,10 @@ public class XmlAnnotation {
     private List<BytecodeAnnotationValue> values() {
         return this.node.children()
             .filter(
-                xmlnode -> xmlnode.hasAttribute("base", new JeoFqn("annotation-property").fqn())
+                xmlnode -> new XmlClosedObject(xmlnode)
+                    .optbase()
+                    .map(base -> base.equals(new JeoFqn("annotation-property").fqn()))
+                    .orElse(false)
             )
             .map(XmlAnnotationValue::new)
             .map(XmlAnnotationValue::bytecode)
