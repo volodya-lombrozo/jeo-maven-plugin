@@ -23,6 +23,21 @@ public final class XmlValue {
     private static final int RADIX = 16;
 
     /**
+     * Boolean TRUE full qualified name.
+     */
+    private static final String TRUE = new EoFqn("true").fqn();
+
+    /**
+     * Boolean FALSE full qualified name.
+     */
+    private static final String FALSE = new EoFqn("false").fqn();
+
+    /**
+     * Number full qualified name.
+     */
+    private static final String NUMBER = new EoFqn("number").fqn();
+
+    /**
      * Space pattern.
      */
     private static final Pattern DELIMITER = Pattern.compile("-");
@@ -57,16 +72,23 @@ public final class XmlValue {
      * @return Object.
      */
     public Object object() {
-        final String base = this.base();
+        final String base = new XmlClosedObject(this.node).base();
         final Object res;
         if (XmlValue.isBoolean(base)) {
-            res = this.parseBoolean();
+            res = base.equals(XmlValue.TRUE);
         } else {
             Codec codec = new EoCodec();
-            if (!this.node.child("o").hasAttribute("base", new EoFqn("number").fqn())) {
+            if (!XmlValue.NUMBER.equals(base)) {
                 codec = new PlainLongCodec(codec);
             }
-            res = new BytecodeBytes(base, this.bytes()).object(codec);
+            final int last = base.lastIndexOf('.');
+            final String pure;
+            if (last == -1) {
+                pure = base;
+            } else {
+                pure = base.substring(last + 1);
+            }
+            res = new BytecodeBytes(pure, this.bytes()).object(codec);
         }
         return res;
     }
@@ -77,15 +99,7 @@ public final class XmlValue {
      * @return True if it's boolean, false otherwise.
      */
     private static boolean isBoolean(final String base) {
-        return "true".equals(base) || "false".equals(base);
-    }
-
-    /**
-     * Parse boolean value.
-     * @return Boolean.
-     */
-    private Object parseBoolean() {
-        return this.node.hasAttribute("base", new EoFqn("true").fqn());
+        return XmlValue.TRUE.equals(base) || XmlValue.FALSE.equals(base);
     }
 
     /**
@@ -122,27 +136,4 @@ public final class XmlValue {
         ).replaceAll("");
     }
 
-    /**
-     * Get the type of the object without a package.
-     * @return Type without package.
-     */
-    private String base() {
-        final String base = this.node.attribute("base")
-            .orElseThrow(
-                () -> new IllegalStateException(
-                    String.format(
-                        "'%s' is not an argument because it doesn't have 'base' attribute",
-                        this.node
-                    )
-                )
-            );
-        final String result;
-        final int last = base.lastIndexOf('.');
-        if (last == -1) {
-            result = base;
-        } else {
-            result = base.substring(last + 1);
-        }
-        return result;
-    }
 }
