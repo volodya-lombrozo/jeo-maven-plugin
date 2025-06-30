@@ -17,6 +17,12 @@ import org.eolang.jeo.representation.directives.EoFqn;
 public final class XmlTryCatchEntry implements XmlBytecodeEntry {
 
     /**
+     * NOP base FQN.
+     * NOP is used to represent an empty label in try-catch blocks.
+     */
+    private static final String NOP = new EoFqn("nop").fqn();
+
+    /**
      * XML node.
      */
     private final XmlNode xmlnode;
@@ -67,7 +73,7 @@ public final class XmlTryCatchEntry implements XmlBytecodeEntry {
      */
     private String type() {
         return Optional.ofNullable(this.xmlnode.children().collect(Collectors.toList()).get(3))
-            .filter(node -> !node.hasAttribute("base", new EoFqn("nop").fqn()))
+            .filter(node -> !XmlTryCatchEntry.NOP.equals(new XmlClosedObject(node).base()))
             .map(XmlValue::new)
             .map(XmlValue::string)
             .filter(s -> !s.isEmpty())
@@ -81,7 +87,7 @@ public final class XmlTryCatchEntry implements XmlBytecodeEntry {
      */
     private Optional<BytecodeLabel> label(final int id) {
         return Optional.ofNullable(this.xmlnode.children().collect(Collectors.toList()).get(id))
-            .filter(node -> !node.hasAttribute("base", new EoFqn("nop").fqn()))
+            .filter(node -> !XmlTryCatchEntry.NOP.equals(new XmlClosedObject(node).base()))
             .map(XmlValue::new)
             .map(XmlValue::object)
             .map(BytecodeLabel.class::cast);
