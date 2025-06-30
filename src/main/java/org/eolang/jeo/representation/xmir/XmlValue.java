@@ -75,7 +75,10 @@ public final class XmlValue {
         final String base = this.base();
         final Object res;
         if (XmlValue.isBoolean(base)) {
-            res = this.node.hasAttribute("base", new EoFqn("true").fqn());
+            res = new XmlClosedObject(this.node).optbase()
+                .map(XmlValue.TRUE::equals)
+                .orElse(false);
+//            res = this.node.hasAttribute("base", new EoFqn("true").fqn());
         } else {
             Codec codec = new EoCodec();
             if (!this.node.child("o").hasAttribute("base", new EoFqn("number").fqn())) {
@@ -97,7 +100,7 @@ public final class XmlValue {
 //        return "true".equals(base) || "false".equals(base);
 //    }
 
-        /**
+    /**
      * Object base.
      * @param base Object 'base' attribute value.
      * @return True if it's boolean, false otherwise.
