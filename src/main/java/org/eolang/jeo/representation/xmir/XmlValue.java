@@ -78,10 +78,13 @@ public final class XmlValue {
             res = new XmlClosedObject(this.node).optbase()
                 .map(XmlValue.TRUE::equals)
                 .orElse(false);
-//            res = this.node.hasAttribute("base", new EoFqn("true").fqn());
         } else {
             Codec codec = new EoCodec();
-            if (!this.node.child("o").hasAttribute("base", new EoFqn("number").fqn())) {
+            final boolean nonumber = !new XmlClosedObject(this.node.child("o"))
+                .optbase()
+                .map(XmlValue.NUMBER::equals)
+                .orElse(false);
+            if (nonumber) {
                 codec = new PlainLongCodec(codec);
             }
             final String result;
@@ -95,10 +98,6 @@ public final class XmlValue {
         }
         return res;
     }
-
-//    private static boolean isBoolean(final String base) {
-//        return "true".equals(base) || "false".equals(base);
-//    }
 
     /**
      * Object base.
