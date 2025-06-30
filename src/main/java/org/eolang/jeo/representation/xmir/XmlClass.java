@@ -33,6 +33,12 @@ import org.xembly.Xembler;
 @EqualsAndHashCode
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public final class XmlClass {
+
+    /**
+     * Field base full qualified name.
+     */
+    private static final String FIELD =  new JeoFqn("field").fqn();
+
     /**
      * Class node from entire XML.
      */
@@ -136,7 +142,12 @@ public final class XmlClass {
      */
     private List<XmlMethod> methods() {
         return this.node.children()
-            .filter(o -> o.attribute("base").map(s -> s.contains("method")).orElse(false))
+            .filter(
+                o -> new XmlClosedObject(o)
+                    .optbase()
+                    .map(s -> s.contains("method"))
+                    .orElse(false)
+            )
             .map(XmlMethod::new)
             .collect(Collectors.toList());
     }
@@ -147,8 +158,12 @@ public final class XmlClass {
      */
     private List<XmlField> fields() {
         return this.node.children()
-            .filter(o -> o.attribute("base").isPresent())
-            .filter(o -> new JeoFqn("field").fqn().equals(o.attribute("base").get()))
+            .filter(
+                o -> new XmlClosedObject(o)
+                    .optbase()
+                    .map(XmlClass.FIELD::equals)
+                    .orElse(false)
+            )
             .map(XmlField::new)
             .collect(Collectors.toList());
     }
