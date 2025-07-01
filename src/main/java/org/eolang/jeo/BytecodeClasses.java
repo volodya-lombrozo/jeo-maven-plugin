@@ -139,7 +139,9 @@ final class BytecodeClasses {
                     );
                 verifier.setClassLoader(Thread.currentThread().getContextClassLoader());
                 new Analyzer<>(verifier).analyze(clazz.name, method);
-            } catch (final ClassFormatError | AnalyzerException exception) {
+            } catch (final ClassFormatError |
+                           AnalyzerException |
+                           IllegalArgumentException exception) {
                 throw new IllegalStateException(
                     String.format(
                         "Bytecode verification failed for the class '%s' and method '%s'",
