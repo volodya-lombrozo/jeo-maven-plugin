@@ -79,7 +79,7 @@ public final class XmlFrame implements XmlBytecodeEntry {
      * @return Local variables.
      */
     private Object[] locals() {
-        return this.node.children().collect(Collectors.toList()).get(2)
+        return new XmlAbstractObject(this.node.children().collect(Collectors.toList()).get(2))
             .children()
             .map(XmlOperand::new)
             .map(XmlOperand::asObject)

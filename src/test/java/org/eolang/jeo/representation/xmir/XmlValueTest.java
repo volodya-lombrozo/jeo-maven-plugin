@@ -4,6 +4,7 @@
  */
 package org.eolang.jeo.representation.xmir;
 
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 import org.eolang.jeo.representation.bytecode.BytecodeLabel;
 import org.eolang.jeo.representation.directives.DirectivesValue;
@@ -22,6 +23,21 @@ import org.xembly.Xembler;
  * @since 0.6
  */
 final class XmlValueTest {
+
+    @Test
+    void bytes() {
+        final Object object = new XmlValue(
+            new NativeXmlNode(
+                "<o base=\"Q.org.eolang.bytes\">\n" +
+                    "   <o>4C-39-38-31-33-30-37-37-32-34</o>\n" +
+                    "</o>\n"
+            )
+        ).object();
+        byte[] bytes = (byte[]) object;
+        System.out.println(bytes);
+        final String s = new String(bytes, StandardCharsets.UTF_8);
+        System.out.println(s);
+    }
 
     @Test
     void parsesHexStringAsInteger() {

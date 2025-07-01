@@ -51,6 +51,8 @@ public final class XmlOperand {
             result = new XmlAnnotation(this.raw).bytecode();
         } else if (new JeoFqn("annotation-property").fqn().equals(base)) {
             result = new XmlAnnotationValue(this.raw).bytecode();
+        } else if (new JeoFqn("label").fqn().equals(base)) {
+            result = new XmlLabel(this.raw).bytecode();
         } else {
             result = new XmlValue(this.raw).object();
         }
