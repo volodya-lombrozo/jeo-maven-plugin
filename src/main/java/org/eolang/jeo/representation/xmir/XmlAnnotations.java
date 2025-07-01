@@ -17,14 +17,14 @@ public class XmlAnnotations {
     /**
      * XML node representing annotations.
      */
-    private final XmlNode node;
+    private final XmlAbstractObject node;
 
     /**
      * Constructor.
      * @param xmlnode XML node.
      */
     XmlAnnotations(final XmlNode xmlnode) {
-        this.node = xmlnode;
+        this.node = new XmlAbstractObject(xmlnode);
     }
 
     /**

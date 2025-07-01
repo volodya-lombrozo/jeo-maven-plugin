@@ -103,7 +103,7 @@ public final class XmlParam {
                 .findFirst()
                 .orElseThrow(
                     () -> new IllegalStateException(
-                        String.format("Child with attribute 'as'='%s' not found", name)
+                        String.format("Child with attribute 'as'='%s' not found in node '%s'", name, this.root)
                     )
                 )
         );
