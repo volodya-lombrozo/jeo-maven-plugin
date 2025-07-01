@@ -18,14 +18,14 @@ public final class XmlParam {
     /**
      * Root node from which we will get all required data.
      */
-    private final XmlNode root;
+    private final XmlAbstractObject root;
 
     /**
      * Constructor.
      * @param root Parameter xml node.
      */
     public XmlParam(final XmlNode root) {
-        this.root = root;
+        this.root = new XmlAbstractObject(root);
     }
 
     /**

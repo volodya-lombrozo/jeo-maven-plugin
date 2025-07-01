@@ -17,13 +17,13 @@ public final class XmlClassProperties {
     /**
      * XML representation of a class.
      */
-    private final XmlNode clazz;
+    private final XmlAbstractObject clazz;
 
     /**
      * Constructor.
      * @param xmlclass XMl representation of a class.
      */
-    XmlClassProperties(final XmlNode xmlclass) {
+    XmlClassProperties(final XmlAbstractObject xmlclass) {
         this.clazz = xmlclass;
     }
 
@@ -53,7 +53,15 @@ public final class XmlClassProperties {
      * @return Access modifiers.
      */
     private int access() {
-        return (int) new XmlValue(this.clazz.child("as", "access")).object();
+        return (int) new XmlValue(this.clazz
+            .children().filter(
+                node -> {
+                    final Optional<String> as = node.attribute("as");
+                    return as.isPresent() && as.get().equals("access");
+                }
+            ).findFirst().orElseThrow(IllegalStateException::new)).object()
+//            .child("as", "access")).object()
+            ;
     }
 
     /**
@@ -112,7 +120,13 @@ public final class XmlClassProperties {
      * @return Child node.
      */
     private Optional<XmlNode> child(final String name) {
-        return this.clazz.optchild("as", name);
+        return this.clazz.children().filter(
+            node -> {
+                final Optional<String> as = node.attribute("as");
+                return as.isPresent() && as.get().equals(name);
+            }
+        ).findFirst();
+//        return this.clazz.optchild("as", name);
     }
 
 }

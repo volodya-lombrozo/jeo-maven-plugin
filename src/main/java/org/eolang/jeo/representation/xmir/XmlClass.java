@@ -43,14 +43,14 @@ public final class XmlClass {
      * Class node from entire XML.
      */
     @ToString.Include
-    private final XmlNode node;
+    private final XmlAbstractObject node;
 
     /**
      * Constructor.
      * @param node The XML node representing the class
      */
     public XmlClass(final XmlNode node) {
-        this.node = node;
+        this.node = new XmlAbstractObject(node);
     }
 
     /**
