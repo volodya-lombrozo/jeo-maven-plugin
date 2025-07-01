@@ -18,14 +18,14 @@ final class XmlHandler {
     /**
      * XML node.
      */
-    private final XmlNode node;
+    private final XmlAbstractObject node;
 
     /**
      * Constructor.
      * @param xmlnode Node.
      */
     XmlHandler(final XmlNode xmlnode) {
-        this.node = xmlnode;
+        this.node = new XmlAbstractObject(xmlnode);
     }
 
     /**

@@ -16,14 +16,14 @@ public final class XmlAttributes {
     /**
      * XML node of attributes.
      */
-    private final XmlNode node;
+    private final XmlAbstractObject node;
 
     /**
      * Constructor.
      * @param xmlnode XML node.
      */
     XmlAttributes(final XmlNode xmlnode) {
-        this.node = xmlnode;
+        this.node = new XmlAbstractObject(xmlnode);
     }
 
     /**

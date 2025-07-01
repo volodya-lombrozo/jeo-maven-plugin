@@ -21,14 +21,14 @@ public class XmlField {
     /**
      * Field node.
      */
-    private final XmlNode node;
+    private final XmlAbstractObject node;
 
     /**
      * Constructor.
      * @param xmlnode Field node.
      */
     XmlField(final XmlNode xmlnode) {
-        this.node = xmlnode;
+        this.node = new XmlAbstractObject(xmlnode);
     }
 
     /**
@@ -105,8 +105,12 @@ public class XmlField {
      * @return Annotations.
      */
     private Optional<XmlAnnotations> annotations() {
-        return this.node.optchild("as", String.format("annotations-%s", this.name()))
-            .map(XmlAnnotations::new);
+//        return this.node.
+//            optchild("as", String.format("annotations-%s", this.name()))
+//            .map(XmlAnnotations::new);
+        return this.node.children().filter(
+            child -> child.hasAttribute("as", String.format("annotations-%s", this.name()))
+        ).findFirst().map(XmlAnnotations::new);
     }
 
     /**
