@@ -147,6 +147,11 @@ public final class XmlValue {
      * @return Type without package.
      */
     private String base() {
+        //Refactor it!
+        final XmlAbstractObject ab = new XmlAbstractObject(this.node);
+        if (ab.optbase().isPresent()) {
+            return ab.base();
+        }
         return new XmlClosedObject(this.node).base();
     }
 }
