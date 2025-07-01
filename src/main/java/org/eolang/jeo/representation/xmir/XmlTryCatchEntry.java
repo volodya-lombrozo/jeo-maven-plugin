@@ -25,14 +25,14 @@ public final class XmlTryCatchEntry implements XmlBytecodeEntry {
     /**
      * XML node.
      */
-    private final XmlNode xmlnode;
+    private final XmlAbstractObject xmlnode;
 
     /**
      * Constructor.
      * @param node XML node
      */
     public XmlTryCatchEntry(final XmlNode node) {
-        this.xmlnode = node;
+        this.xmlnode = new XmlAbstractObject(node);
     }
 
     /**
