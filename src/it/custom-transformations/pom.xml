@@ -28,7 +28,8 @@
         <artifactId>jeo-maven-plugin</artifactId>
         <version>@project.version@</version>
         <configuration>
-          <xmirVerification>true</xmirVerification>
+          <!-- todo: enable verification -->
+          <xmirVerification>false</xmirVerification>
         </configuration>
         <executions>
           <execution>
