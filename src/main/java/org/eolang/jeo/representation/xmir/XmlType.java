@@ -15,14 +15,14 @@ final class XmlType {
     /**
      * Raw XML node representing the type.
      */
-    private final XmlNode raw;
+    private final XmlAbstractObject raw;
 
     /**
      * Constructor.
      * @param raw Raw XML node representing the type.
      */
     XmlType(final XmlNode raw) {
-        this.raw = raw;
+        this.raw = new XmlAbstractObject(raw);
     }
 
     /**
@@ -31,7 +31,14 @@ final class XmlType {
      */
     public Type type() {
         try {
-            return Type.getType(new XmlValue(this.raw.firstChild()).string());
+            return Type.getType(
+                new XmlValue(
+                    this.raw.child(0)
+                        .orElseThrow(
+                            () -> new IllegalStateException("Cannot find the first child node")
+                        )
+                ).string()
+            );
         } catch (final ClassCastException exception) {
             throw new IllegalArgumentException(
                 String.format(

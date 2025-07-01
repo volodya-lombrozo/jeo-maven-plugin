@@ -360,6 +360,8 @@ public final class XmlMethod {
      */
     private Optional<XmlDefaultValue> defvalue() {
         return this.node.children()
+            // Refactor it!
+            .filter(child -> new XmlAbstractObject(child).optbase().isPresent())
             .filter(child -> XmlMethod.ADEFVALUE.equals(new XmlAbstractObject(child).base()))
             .findFirst()
             .map(XmlDefaultValue::new);
@@ -371,6 +373,8 @@ public final class XmlMethod {
      */
     private BytecodeMethodParameters params() {
         return this.node.children()
+            // Refactor it!
+            .filter(child -> new XmlAbstractObject(child).optbase().isPresent())
             .filter(child -> XmlMethod.PARAMS_BASE.equals(new XmlAbstractObject(child).base()))
             .findFirst()
             .map(XmlParams::new).map(XmlParams::params)

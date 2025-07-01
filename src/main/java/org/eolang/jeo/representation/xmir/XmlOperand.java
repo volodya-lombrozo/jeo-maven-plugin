@@ -36,7 +36,12 @@ public final class XmlOperand {
      */
     @EqualsAndHashCode.Include
     public Object asObject() {
-        final String base = new XmlAbstractObject(this.raw).base();
+        final XmlAbstractObject object = new XmlAbstractObject(this.raw);
+        // Refactor it!
+        if(!object.optbase().isPresent()){
+            return new XmlValue(this.raw).object();
+        }
+        final String base = object.base();
         final Object result;
         if (new JeoFqn("handle").fqn().equals(base)) {
             result = new XmlHandler(this.raw).bytecode().asHandle();

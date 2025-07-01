@@ -19,14 +19,14 @@ public class XmlAnnotation {
     /**
      * Xmir node.
      */
-    private final XmlNode node;
+    private final XmlAbstractObject node;
 
     /**
      * Constructor.
      * @param xmlnode XML node.
      */
     XmlAnnotation(final XmlNode xmlnode) {
-        this.node = xmlnode;
+        this.node = new XmlAbstractObject(xmlnode);
     }
 
     /**

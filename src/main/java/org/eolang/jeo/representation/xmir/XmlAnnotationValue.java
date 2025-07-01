@@ -23,7 +23,7 @@ public final class XmlAnnotationValue {
      */
     private final XmlAbstractObject node;
 
-    public XmlAnnotationValue(final XmlNode node){
+    public XmlAnnotationValue(final XmlNode node) {
         this(new XmlAbstractObject(node));
     }
 
@@ -88,8 +88,17 @@ public final class XmlAnnotationValue {
      * @return Type.
      */
     private String type() {
+        final List<XmlNode> collect = this.node.children().collect(Collectors.toList());
+        if (collect.isEmpty()) {
+            throw new IllegalStateException(
+                String.format(
+                    "The '%s' node doesn't have any children, but it should have at least one",
+                    this.node
+                )
+            );
+        }
         return (String) new XmlOperand(
-            this.node.children().collect(Collectors.toList()).get(0)
+            collect.get(0)
         ).asObject();
     }
 
