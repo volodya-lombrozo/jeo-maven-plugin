@@ -59,14 +59,18 @@ public final class XmlMethod {
     /**
      * Method node.
      */
-    private final XmlNode node;
+    private final XmlAbstractObject node;
 
     /**
      * Constructor.
      * @param xmlnode Method node.
      */
     public XmlMethod(final XmlNode xmlnode) {
-        this.node = xmlnode;
+        this(new XmlAbstractObject(xmlnode));
+    }
+
+    public XmlMethod(final XmlAbstractObject node) {
+        this.node = node;
     }
 
     /**
@@ -199,7 +203,9 @@ public final class XmlMethod {
     private List<XmlBytecodeEntry> instructions() {
         return this.node.children().filter(XmlMethod.attrContains("as", "body"))
             .findFirst()
-            .map(XmlNode::children)
+            // Do we neeed to add XmlSeq? It would mirror DirectivesSeq.
+            .map(XmlAbstractObject::new)
+            .map(XmlAbstractObject::children)
             .orElse(Stream.empty())
             .map(XmlMethod::toEntry)
             .collect(Collectors.toList());
@@ -212,7 +218,7 @@ public final class XmlMethod {
      */
     private static XmlBytecodeEntry toEntry(final XmlNode node) {
         final XmlBytecodeEntry result;
-        final Optional<String> base = new XmlClosedObject(node).optbase();
+        final Optional<String> base = new XmlAbstractObject(node).optbase();
         if (base.isPresent() && new JeoFqn("label").fqn().equals(base.get())) {
             result = new XmlLabel(node);
         } else if (base.isPresent() && new JeoFqn("frame").fqn().equals(base.get())) {
@@ -354,7 +360,7 @@ public final class XmlMethod {
      */
     private Optional<XmlDefaultValue> defvalue() {
         return this.node.children()
-            .filter(child -> XmlMethod.ADEFVALUE.equals(new XmlClosedObject(child).base()))
+            .filter(child -> XmlMethod.ADEFVALUE.equals(new XmlAbstractObject(child).base()))
             .findFirst()
             .map(XmlDefaultValue::new);
     }
@@ -365,7 +371,7 @@ public final class XmlMethod {
      */
     private BytecodeMethodParameters params() {
         return this.node.children()
-            .filter(child -> XmlMethod.PARAMS_BASE.equals(new XmlClosedObject(child).base()))
+            .filter(child -> XmlMethod.PARAMS_BASE.equals(new XmlAbstractObject(child).base()))
             .findFirst()
             .map(XmlParams::new).map(XmlParams::params)
             .orElse(new BytecodeMethodParameters());

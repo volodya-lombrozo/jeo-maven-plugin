@@ -73,7 +73,7 @@ public final class XmlTryCatchEntry implements XmlBytecodeEntry {
      */
     private String type() {
         return Optional.ofNullable(this.xmlnode.children().collect(Collectors.toList()).get(3))
-            .filter(node -> !XmlTryCatchEntry.NOP.equals(new XmlClosedObject(node).base()))
+            .filter(node -> !XmlTryCatchEntry.NOP.equals(new XmlAbstractObject(node).base()))
             .map(XmlValue::new)
             .map(XmlValue::string)
             .filter(s -> !s.isEmpty())
@@ -87,7 +87,7 @@ public final class XmlTryCatchEntry implements XmlBytecodeEntry {
      */
     private Optional<BytecodeLabel> label(final int id) {
         return Optional.ofNullable(this.xmlnode.children().collect(Collectors.toList()).get(id))
-            .filter(node -> !XmlTryCatchEntry.NOP.equals(new XmlClosedObject(node).base()))
+            .filter(node -> !XmlTryCatchEntry.NOP.equals(new XmlAbstractObject(node).base()))
             .map(XmlValue::new)
             .map(XmlValue::object)
             .map(BytecodeLabel.class::cast);

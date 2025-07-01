@@ -143,7 +143,7 @@ public final class XmlClass {
     private List<XmlMethod> methods() {
         return this.node.children()
             .filter(
-                o -> new XmlClosedObject(o)
+                o -> new XmlAbstractObject(o)
                     .optbase()
                     .map(s -> s.contains("method"))
                     .orElse(false)
@@ -159,7 +159,7 @@ public final class XmlClass {
     private List<XmlField> fields() {
         return this.node.children()
             .filter(
-                o -> new XmlClosedObject(o)
+                o -> new XmlAbstractObject(o)
                     .optbase()
                     .map(XmlClass.FIELD::equals)
                     .orElse(false)

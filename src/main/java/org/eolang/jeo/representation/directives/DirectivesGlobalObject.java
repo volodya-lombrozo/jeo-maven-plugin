@@ -62,7 +62,7 @@ public final class DirectivesGlobalObject implements Iterable<Directive> {
 
     @Override
     public Iterator<Directive> iterator() {
-        return new DirectivesClosedObject(
+        return new DirectivesAbsractObject(
             new JeoFqn(this.base).fqn(),
             "",
             this.name,

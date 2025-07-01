@@ -4,7 +4,10 @@
  */
 package org.eolang.jeo.representation.xmir;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class XmlAbstractObject {
 
@@ -55,5 +58,45 @@ public final class XmlAbstractObject {
                 this.node, name
             )
         );
+    }
+
+    Optional<String> attribute(final String name) {
+        return this.node.attribute(name);
+    }
+
+
+    /**
+     * Get the child node by index.
+     * @param index Index of the child node.
+     * @return Optional child node.
+     */
+    Optional<XmlNode> child(int index) {
+        index++;
+        final Optional<XmlNode> result;
+        final List<XmlNode> children = this.node.children().collect(Collectors.toList());
+        if (index < 0 || index >= children.size()) {
+            result = Optional.empty();
+        } else {
+            result = Optional.ofNullable(children.get(index));
+        }
+        return result;
+    }
+
+    Stream<XmlNode> children() {
+        final List<XmlNode> collect = this.node.children().collect(Collectors.toList());
+        if (collect.isEmpty()) {
+            throw new IllegalStateException(
+                String.format(
+                    "The '%s' node doesn't have any children, but it should have at least one",
+                    this.node
+                )
+            );
+        }
+        return collect.subList(1, collect.size()).stream();
+    }
+
+    @Override
+    public String toString() {
+        return this.node.toString();
     }
 }

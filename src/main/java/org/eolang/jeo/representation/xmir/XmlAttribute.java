@@ -21,7 +21,7 @@ public final class XmlAttribute {
     /**
      * XML node of an attribute.
      */
-    private final XmlClosedObject node;
+    private final XmlAbstractObject node;
 
     /**
      * Constructor.
@@ -36,7 +36,7 @@ public final class XmlAttribute {
      * @param node XML node.
      */
     XmlAttribute(final XmlNode node) {
-        this.node = new XmlClosedObject(node);
+        this.node = new XmlAbstractObject(node);
     }
 
     /**

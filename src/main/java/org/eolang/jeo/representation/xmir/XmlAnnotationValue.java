@@ -21,13 +21,17 @@ public final class XmlAnnotationValue {
     /**
      * Annotation property XML node.
      */
-    private final XmlNode node;
+    private final XmlAbstractObject node;
+
+    public XmlAnnotationValue(final XmlNode node){
+        this(new XmlAbstractObject(node));
+    }
 
     /**
      * Constructor.
      * @param xmlnode XML node.
      */
-    public XmlAnnotationValue(final XmlNode xmlnode) {
+    public XmlAnnotationValue(final XmlAbstractObject xmlnode) {
         this.node = xmlnode;
     }
 

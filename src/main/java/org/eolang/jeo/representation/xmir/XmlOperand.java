@@ -36,7 +36,7 @@ public final class XmlOperand {
      */
     @EqualsAndHashCode.Include
     public Object asObject() {
-        final String base = new XmlClosedObject(this.raw).base();
+        final String base = new XmlAbstractObject(this.raw).base();
         final Object result;
         if (new JeoFqn("handle").fqn().equals(base)) {
             result = new XmlHandler(this.raw).bytecode().asHandle();
