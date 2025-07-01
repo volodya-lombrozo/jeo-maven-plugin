@@ -95,7 +95,8 @@ public final class XmlClassProperties {
     private String[] interfaces() {
         return this.child("interfaces")
             .map(
-                node -> node.children()
+                node -> new XmlAbstractObject(node)
+                    .children()
                     .map(XmlValue::new)
                     .map(XmlValue::string)
                     .toArray(String[]::new)
