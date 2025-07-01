@@ -388,7 +388,8 @@ public final class XmlMethod {
      */
     private String[] exceptions() {
         return this.ochild("exceptions")
-            .map(XmlNode::children)
+            .map(XmlAbstractObject::new)
+            .map(XmlAbstractObject::children)
             .orElse(Stream.empty())
             .map(XmlValue::new)
             .map(XmlValue::string)
