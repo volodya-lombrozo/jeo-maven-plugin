@@ -4,6 +4,7 @@
  */
 package org.eolang.jeo.representation.xmir;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.eolang.jeo.representation.bytecode.BytecodeLabel;
@@ -73,7 +74,7 @@ public final class XmlTryCatchEntry implements XmlBytecodeEntry {
      */
     private String type() {
         return Optional.ofNullable(this.xmlnode.children().collect(Collectors.toList()).get(3))
-            .filter(node -> !XmlTryCatchEntry.NOP.equals(new XmlAbstractObject(node).base()))
+            .filter(node -> !XmlTryCatchEntry.NOP.equals(new XmlClosedObject(node).base()))
             .map(XmlValue::new)
             .map(XmlValue::string)
             .filter(s -> !s.isEmpty())
@@ -86,7 +87,18 @@ public final class XmlTryCatchEntry implements XmlBytecodeEntry {
      * @return Label.
      */
     private Optional<BytecodeLabel> label(final int id) {
-        return Optional.ofNullable(this.xmlnode.children().collect(Collectors.toList()).get(id))
+        final List<XmlNode> all = this.xmlnode.children().collect(Collectors.toList());
+        if (all.size() <= id) {
+            throw new IllegalStateException(
+                String.format(
+                    "Expected at least %d element, but found %d in %s",
+                    id + 1,
+                    all.size(),
+                    this.xmlnode
+                )
+            );
+        }
+        return Optional.ofNullable(all.get(id))
             .filter(node -> !XmlTryCatchEntry.NOP.equals(new XmlAbstractObject(node).base()))
             .map(XmlValue::new)
             .map(XmlValue::object)

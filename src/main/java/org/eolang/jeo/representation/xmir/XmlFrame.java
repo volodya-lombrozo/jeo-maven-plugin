@@ -113,7 +113,7 @@ public final class XmlFrame implements XmlBytecodeEntry {
      * @return Stack elements.
      */
     private Object[] stack() {
-        return this.node.children().collect(Collectors.toList()).get(4)
+        return new XmlAbstractObject(this.node.children().collect(Collectors.toList()).get(4))
             .children()
             .map(XmlOperand::new)
             .map(XmlOperand::asObject)

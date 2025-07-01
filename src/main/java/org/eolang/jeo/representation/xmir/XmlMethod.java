@@ -334,7 +334,8 @@ public final class XmlMethod {
                 element -> element.attribute("as")
                     .map(s -> s.contains("trycatchblocks"))
                     .orElse(false))
-            .flatMap(XmlNode::children)
+            .map(XmlAbstractObject::new)
+            .flatMap(XmlAbstractObject::children)
             .map(XmlTryCatchEntry::new)
             .collect(Collectors.toList());
     }
