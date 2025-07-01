@@ -73,7 +73,7 @@ public final class DirectivesAbsractObject implements Iterable<Directive> {
      * @checkstyle ParameterNameCheck (5 lines)
      * @checkstyle ParameterNumberCheck (5 lines)
      */
-    DirectivesAbsractObject(
+    public DirectivesAbsractObject(
         final String base,
         final String as,
         final String name,
@@ -94,7 +94,7 @@ public final class DirectivesAbsractObject implements Iterable<Directive> {
         if (!this.name.isEmpty()) {
             directives.attr("name", this.name);
         }
-        directives.append(new DirectivesEoObject("base", this.base));
+        directives.append(new DirectivesValue("base", this.base));
         if (this.internal.iterator().hasNext()) {
             directives.append(this.internal);
         }
