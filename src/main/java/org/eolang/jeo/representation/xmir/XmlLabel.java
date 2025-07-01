@@ -5,9 +5,7 @@
 package org.eolang.jeo.representation.xmir;
 
 import java.nio.charset.StandardCharsets;
-import org.eolang.jeo.representation.bytecode.BytecodeBytes;
 import org.eolang.jeo.representation.bytecode.BytecodeLabel;
-import org.eolang.jeo.representation.bytecode.EoCodec;
 
 /**
  * XML representation of bytecode label.
@@ -33,22 +31,11 @@ public final class XmlLabel implements XmlBytecodeEntry {
      * @return Bytecode label.
      */
     public BytecodeLabel bytecode() {
-//        final XmlNode first = this.node.children().findFirst()
-//            .orElseThrow(IllegalStateException::new);
-//        final XmlValue value = new XmlValue(
-//            first
-//        );
-//        throw new IllegalStateException("Failed to convert label to bytecode, node: "
-//            + this.node + "\n Value: " + first);
-        byte[] res = (byte[]) new XmlValue(
-            this.node.children().findFirst().orElseThrow(IllegalStateException::new)
-        ).object();
-        return  new BytecodeLabel(new String(res, StandardCharsets.UTF_8));
-
-//        return (BytecodeLabel) new BytecodeBytes("label", res).object( new EoCodec());
-//        return new BytecodeLabel(res);
-//        return (BytecodeLabel) new XmlValue(this.node).object();
-
-
+        final XmlNode xmlnode = this.node.children()
+            .findFirst()
+            .orElseThrow(IllegalStateException::new);
+        return new BytecodeLabel(
+            new String((byte[]) new XmlValue(xmlnode).object(), StandardCharsets.UTF_8)
+        );
     }
 }

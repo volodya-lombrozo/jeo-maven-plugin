@@ -115,7 +115,7 @@ public final class XmlValue {
     private byte[] bytes() {
         final String hex = this.hex();
         final byte[] res;
-        if (hex.isEmpty()) {
+        if (hex.isEmpty() || hex.equals("--")) {
             res = null;
         } else {
             final char[] chars = hex.toCharArray();
@@ -137,9 +137,26 @@ public final class XmlValue {
      * @return Hex string.
      */
     private String hex() {
-        return XmlValue.DELIMITER.matcher(
-            this.node.firstChild().text().trim()
-        ).replaceAll("");
+        // Refactor it!
+        final XmlAbstractObject object = new XmlAbstractObject(this.node);
+        if (object.optbase().isPresent()) {
+            final String trim = object.children()
+                .findFirst()
+                .orElseThrow(
+                    () -> new IllegalStateException(
+                        String.format(
+                            "Can't find child in '%s' to convert to hex",
+                            this.node
+                        )
+                    )
+                ).text()
+                .trim();
+            return XmlValue.DELIMITER.matcher(trim).replaceAll("");
+        } else {
+            return XmlValue.DELIMITER.matcher(
+                this.node.firstChild().text().trim()
+            ).replaceAll("");
+        }
     }
 
     /**

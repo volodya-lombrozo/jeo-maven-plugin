@@ -29,7 +29,7 @@
         <version>@project.version@</version>
         <configuration>
           <xmirVerification>false</xmirVerification>
-          <omitComments>false</omitComments>
+<!--          <omitComments>false</omitComments>-->
         </configuration>
         <executions>
           <execution>
