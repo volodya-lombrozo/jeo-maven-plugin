@@ -4,6 +4,7 @@
  */
 package org.eolang.jeo.representation.directives;
 
+import com.jcabi.matchers.XhtmlMatchers;
 import java.util.stream.Stream;
 import org.eolang.jeo.representation.bytecode.BytecodeInstruction;
 import org.hamcrest.MatcherAssert;
@@ -12,6 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.objectweb.asm.Opcodes;
+import org.xembly.ImpossibleModificationException;
 import org.xembly.Xembler;
 
 /**
@@ -19,6 +21,22 @@ import org.xembly.Xembler;
  * @since 0.6
  */
 final class DirectivesInstructionTest {
+
+    @ParameterizedTest
+    @MethodSource("instructionBases")
+    void transformsIntoEoWithoutCountingOpcodes(
+        final int opcode, final String base
+    ) throws ImpossibleModificationException {
+        final String xml = new Xembler(new DirectivesInstruction(opcode)).xml();
+        MatcherAssert.assertThat(
+            String.format(
+                "We expect to get the EO representation of the bytecode where each instruction has a simple name without sequence number, please check the final XML:%n%s%n",
+                xml
+            ),
+            xml,
+            XhtmlMatchers.hasXPath(String.format("//o[contains(@base,'%s')]", base))
+        );
+    }
 
     @ParameterizedTest
     @MethodSource("instructions")
@@ -71,6 +89,15 @@ final class DirectivesInstructionTest {
             Arguments.of(new BytecodeInstruction(Opcodes.RETURN), "<!-- #177:return() -->"),
             Arguments.of(new BytecodeInstruction(Opcodes.ARETURN), "<!-- #176:areturn() -->"),
             Arguments.of(new BytecodeInstruction(Opcodes.DUP), "<!-- #89:dup() -->")
+        );
+    }
+
+    static Stream<Arguments> instructionBases() {
+        return Stream.of(
+            Arguments.of(Opcodes.GETSTATIC, "jeo.opcode.getstatic"),
+            Arguments.of(Opcodes.LDC, "jeo.opcode.ldc"),
+            Arguments.of(Opcodes.INVOKEVIRTUAL, "jeo.opcode.invokevirtual"),
+            Arguments.of(Opcodes.RETURN, "jeo.opcode.return")
         );
     }
 }

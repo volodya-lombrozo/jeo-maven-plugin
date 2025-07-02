@@ -106,28 +106,6 @@ final class BytecodeClassTest {
     }
 
     @Test
-    void transformsBytecodeIntoEoWithoutCountingOpcodes() {
-        final XML xmir = new BytecodeRepresentation(
-            new BytecodeObject(
-                new BytecodeClass("Hello").helloWorldMethod()
-            ).bytecode()
-        ).toXmir();
-        MatcherAssert.assertThat(
-            String.format(
-                "We expect to get the EO representation of the bytecode where each instruction has a simple name without sequence number, please check the final XML:%n%s%n",
-                xmir
-            ),
-            xmir.toString(),
-            XhtmlMatchers.hasXPaths(
-                "//o[contains(@base,'jeo.opcode.getstatic')]",
-                "//o[contains(@base,'jeo.opcode.ldc')]",
-                "//o[contains(@base,'jeo.opcode.invokevirtual')]",
-                "//o[contains(@base,'jeo.opcode.return')]"
-            )
-        );
-    }
-
-    @Test
     void createsMethodWithArrayParameterUsage() {
         Assertions.assertDoesNotThrow(
             () -> {
