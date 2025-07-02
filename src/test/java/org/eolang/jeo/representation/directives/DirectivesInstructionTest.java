@@ -9,10 +9,12 @@ import java.util.stream.Stream;
 import org.eolang.jeo.representation.bytecode.BytecodeInstruction;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.xembly.ImpossibleModificationException;
 import org.xembly.Xembler;
 
@@ -21,6 +23,28 @@ import org.xembly.Xembler;
  * @since 0.6
  */
 final class DirectivesInstructionTest {
+
+    @Test
+    void covertsInstructionWithTypeToDirectives() {
+        MatcherAssert.assertThat(
+            "We expect that the bytecode instruction argument with type 'Type' will be wrapped in sting, see https://github.com/objectionary/jeo-maven-plugin/issues/1125",
+            new Xembler(
+                new DirectivesInstruction(
+                    Opcodes.LDC,
+                    Type.getType(Integer.class)
+                )
+            ).xmlQuietly(),
+            XhtmlMatchers.hasXPath(
+                new StringBuilder(0)
+                    .append("/o[@base='Q.jeo.opcode.ldc']")
+                    .append("/o[@base='Q.jeo.type']")
+                    .append("/o[@base='Q.org.eolang.string']")
+                    .append("/o[@base='Q.org.eolang.bytes']")
+                    .append("/o[text()]")
+                    .toString()
+            )
+        );
+    }
 
     @ParameterizedTest
     @MethodSource("instructionBases")
