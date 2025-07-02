@@ -35,8 +35,8 @@ final class DirectivesInstructionTest {
                 )
             ).xmlQuietly(),
             XhtmlMatchers.hasXPaths(
-                new BaseXpath("/o", "ldc").toXpath(),
-                new BaseXpath("/o/o", "type").toXpath(),
+                new JeoBaseXpath("/o", "ldc").toXpath(),
+                new JeoBaseXpath("/o/o", "type").toXpath(),
                 "/o/o/o[contains(@base,'string')]",
                 "/o/o/o/o[contains(@base, 'bytes')]"
             )
@@ -55,7 +55,7 @@ final class DirectivesInstructionTest {
                 xml
             ),
             xml,
-            XhtmlMatchers.hasXPath(new BaseXpath("//o", base).toXpath())
+            XhtmlMatchers.hasXPath(new JeoBaseXpath("//o", base).toXpath())
         );
     }
 

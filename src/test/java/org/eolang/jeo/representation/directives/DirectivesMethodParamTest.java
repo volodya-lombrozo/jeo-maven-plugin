@@ -99,7 +99,7 @@ final class DirectivesMethodParamTest {
                 )
             ).xml(),
             XhtmlMatchers.hasXPaths(
-                new BaseXpath("./o", "param").toXpath(),
+                new JeoBaseXpath("./o", "param").toXpath(),
                 "./o/o[contains(@as, 'annotations')]"
             )
         );

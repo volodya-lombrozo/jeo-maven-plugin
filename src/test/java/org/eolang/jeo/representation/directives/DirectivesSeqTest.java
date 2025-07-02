@@ -34,7 +34,7 @@ final class DirectivesSeqTest {
                 )
             ).xml(),
             XhtmlMatchers.hasXPaths(
-                new BaseXpath("./o", "seq.of2").toXpath(),
+                new JeoBaseXpath("./o", "seq.of2").toXpath(),
                 "/o[contains(@as,'seq')]",
                 "/o[contains(@as,'seq')]/o[contains(@base,'string')]/o[contains(@base, 'bytes')]/o[text()='31-']",
                 "/o[contains(@as,'seq')]/o[contains(@base,'string')]/o[contains(@base, 'bytes')]/o[text()='32-']"
@@ -51,7 +51,7 @@ final class DirectivesSeqTest {
             "The size of the sequence is not as expected",
             new Xembler(actual).xml(),
             XhtmlMatchers.hasXPaths(
-                new BaseXpath("./o", String.format("seq.of%d", expected)).toXpath(),
+                new JeoBaseXpath("./o", String.format("seq.of%d", expected)).toXpath(),
                 "/o[contains(@as,'seq')]"
             )
         );

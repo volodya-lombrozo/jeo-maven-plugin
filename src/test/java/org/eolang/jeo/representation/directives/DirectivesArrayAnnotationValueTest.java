@@ -36,7 +36,7 @@ final class DirectivesArrayAnnotationValueTest {
                 )
             ).xml(),
             XhtmlMatchers.hasXPaths(
-                new BaseXpath("./o", "annotation-property").toXpath(),
+                new JeoBaseXpath("./o", "annotation-property").toXpath(),
                 "./o/o[2]/o[1]/o[text()='41-52-52-41-59']"
             )
         );

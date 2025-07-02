@@ -10,7 +10,7 @@ import org.eolang.jeo.representation.bytecode.JavaCodec;
  * XPath for the base of an object.
  * @since 0.11.0
  */
-final class BaseXpath {
+final class JeoBaseXpath {
 
     /**
      * Element where the base is located.
@@ -27,7 +27,7 @@ final class BaseXpath {
      * @param element Element of the instruction.
      * @param base Base of the instruction.
      */
-    BaseXpath(final String element, final String base) {
+    JeoBaseXpath(final String element, final String base) {
         this.element = element;
         this.base = base;
     }

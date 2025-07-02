@@ -28,7 +28,7 @@ final class DirectivesValuesTest {
             "We expect that array of values will be converted to correct Xembly directives",
             new Xembler(new DirectivesValues("name", "value")).xml(),
             XhtmlMatchers.hasXPaths(
-                new BaseXpath("./o", "seq.of1").toXpath(),
+                new JeoBaseXpath("./o", "seq.of1").toXpath(),
                 "./o[contains(@as,'name')]",
                 "./o[contains(@as,'name')]/o/o/o[text()='76-61-6C-75-65']"
             )
