@@ -34,14 +34,11 @@ final class DirectivesInstructionTest {
                     Type.getType(Integer.class)
                 )
             ).xmlQuietly(),
-            XhtmlMatchers.hasXPath(
-                new StringBuilder(0)
-                    .append("/o[@base='Q.jeo.opcode.ldc']")
-                    .append("/o[@base='Q.jeo.type']")
-                    .append("/o[@base='Q.org.eolang.string']")
-                    .append("/o[@base='Q.org.eolang.bytes']")
-                    .append("/o[text()]")
-                    .toString()
+            XhtmlMatchers.hasXPaths(
+                new BaseXpath("/o", "ldc").toXpath(),
+                new BaseXpath("/o/o", "type").toXpath(),
+                "/o/o/o[contains(@base,'string')]",
+                "/o/o/o/o[contains(@base, 'bytes')]"
             )
         );
     }
@@ -58,7 +55,7 @@ final class DirectivesInstructionTest {
                 xml
             ),
             xml,
-            XhtmlMatchers.hasXPath(String.format("//o[contains(@base,'%s')]", base))
+            XhtmlMatchers.hasXPath(new BaseXpath("//o", base).toXpath())
         );
     }
 
