@@ -33,10 +33,9 @@ final class XmlType {
         try {
             return Type.getType(
                 new XmlValue(
-                    this.raw.child(0)
-                        .orElseThrow(
-                            () -> new IllegalStateException("Cannot find the first child node")
-                        )
+                    this.raw.child(0).orElseThrow(
+                        () -> new IllegalStateException("Cannot find the first child node")
+                    )
                 ).string()
             );
         } catch (final ClassCastException exception) {

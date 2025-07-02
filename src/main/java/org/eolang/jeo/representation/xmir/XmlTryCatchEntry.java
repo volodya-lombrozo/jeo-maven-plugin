@@ -99,6 +99,7 @@ public final class XmlTryCatchEntry implements XmlBytecodeEntry {
             );
         }
         return Optional.ofNullable(all.get(id))
+            .filter(node -> new XmlAbstractObject(node).optbase().isPresent())
             .filter(node -> !XmlTryCatchEntry.NOP.equals(new XmlAbstractObject(node).base()))
             .map(XmlValue::new)
             .map(XmlValue::object)
