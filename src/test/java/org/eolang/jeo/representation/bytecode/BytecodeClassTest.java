@@ -44,7 +44,7 @@ final class BytecodeClassTest {
                 "Can't parse abstract class with access modifier %s",
                 access
             ),
-            new BytecodeProgram(new BytecodeClass("AbstractClass", access)).bytecode(),
+            new BytecodeObject(new BytecodeClass("AbstractClass", access)).bytecode(),
             Matchers.notNullValue()
         );
     }
@@ -52,7 +52,7 @@ final class BytecodeClassTest {
     @Test
     void createsConstructorWithStoreInstructions() {
         Assertions.assertDoesNotThrow(
-            () -> new BytecodeProgram(
+            () -> new BytecodeObject(
                 new BytecodeClass("Store")
                     .withConstructor()
                     .opcode(Opcodes.ICONST_0)
@@ -76,7 +76,7 @@ final class BytecodeClassTest {
     void createsBytecodeWithDefaultConstructor() {
         MatcherAssert.assertThat(
             "Can't create bytecode with default public constructor",
-            new BytecodeProgram(
+            new BytecodeObject(
                 new BytecodeClass("DefaultConstructor")
                     .withConstructor(Opcodes.ACC_PUBLIC)
                     .opcode(Opcodes.RETURN)
@@ -92,7 +92,7 @@ final class BytecodeClassTest {
             "Exception message is not equal to expected",
             Assertions.assertThrows(
                 IllegalStateException.class,
-                () -> new BytecodeProgram(new BytecodeClass("UnknownInstruction")
+                () -> new BytecodeObject(new BytecodeClass("UnknownInstruction")
                     .withConstructor()
                     .opcode(305)
                     .up()
@@ -108,7 +108,7 @@ final class BytecodeClassTest {
     @Test
     void transformsBytecodeIntoEoWithoutCountingOpcodes() {
         final XML xmir = new BytecodeRepresentation(
-            new BytecodeProgram(
+            new BytecodeObject(
                 new BytecodeClass("Hello").helloWorldMethod()
             ).bytecode()
         ).toXmir();
@@ -166,7 +166,7 @@ final class BytecodeClassTest {
     @Test
     void generatesCodeForInterface() {
         Assertions.assertDoesNotThrow(
-            () -> new BytecodeProgram(new BytecodeClass("org/eolang/benchmark/F")
+            () -> new BytecodeObject(new BytecodeClass("org/eolang/benchmark/F")
                 .withMethod("j$foo", "()I", 1025)
                 .up()
             ).bytecode(),
@@ -178,7 +178,7 @@ final class BytecodeClassTest {
     void failsBecauseBytecodeIsBroken() {
         Assertions.assertThrows(
             IllegalStateException.class,
-            () -> new BytecodeProgram(new BytecodeClass("Broken")
+            () -> new BytecodeObject(new BytecodeClass("Broken")
                 .withMethod("j$bar", "()I", Opcodes.ACC_PUBLIC)
                 .label()
                 .opcode(Opcodes.ALOAD, 0)
@@ -196,7 +196,7 @@ final class BytecodeClassTest {
     @Test
     void returnsShortValue() {
         Assertions.assertDoesNotThrow(
-            () -> new BytecodeProgram(
+            () -> new BytecodeObject(
                 new BytecodeClass("ShortValue")
                     .withMethod("j$foo", "()S", Opcodes.ACC_PUBLIC)
                     .opcode(Opcodes.SIPUSH, 256)

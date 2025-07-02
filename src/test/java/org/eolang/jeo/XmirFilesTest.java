@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import org.cactoos.io.ResourceOf;
 import org.eolang.jeo.representation.BytecodeRepresentation;
 import org.eolang.jeo.representation.bytecode.BytecodeClass;
-import org.eolang.jeo.representation.bytecode.BytecodeProgram;
+import org.eolang.jeo.representation.bytecode.BytecodeObject;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -37,12 +37,12 @@ final class XmirFilesTest {
         Files.createDirectories(directory);
         Files.write(
             directory.resolve("first.xmir"),
-            new BytecodeProgram(new BytecodeClass("org.jeo.First")).xml().toString()
+            new BytecodeObject(new BytecodeClass("org.jeo.First")).xml().toString()
                 .getBytes(StandardCharsets.UTF_8)
         );
         Files.write(
             directory.resolve("second.xmir"),
-            new BytecodeProgram(new BytecodeClass("org.jeo.Second")).xml().toString()
+            new BytecodeObject(new BytecodeClass("org.jeo.Second")).xml().toString()
                 .getBytes(StandardCharsets.UTF_8)
         );
         MatcherAssert.assertThat(
@@ -78,7 +78,7 @@ final class XmirFilesTest {
         Files.createDirectories(path);
         Files.write(
             path.resolve("opeo-class.xmir"),
-            new BytecodeProgram(new BytecodeClass("org.jeo.OpeoClass")).xml().toString()
+            new BytecodeObject(new BytecodeClass("org.jeo.OpeoClass")).xml().toString()
                 .getBytes(StandardCharsets.UTF_8)
         );
         final Stream<Path> all = new XmirFiles(path).all();
@@ -124,7 +124,7 @@ final class XmirFilesTest {
     void throwsExceptionIfXmirIsInvalid(@TempDir final Path temp) throws IOException {
         Files.write(
             temp.resolve("MethodByte.xmir"),
-            new BytecodeProgram(
+            new BytecodeObject(
                 new BytecodeClass("org/eolang/foo/Math")
             ).xml().toString().replace("<head>package</head>", "")
                 .getBytes(StandardCharsets.UTF_8)
