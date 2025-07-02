@@ -8,6 +8,9 @@ import org.eolang.jeo.representation.bytecode.JavaCodec;
 
 /**
  * XPath for the base of an object.
+ * This class is the response to the frequent changes in a way we represent 'base' attribute in
+ * XMIR. These frequent changes made it difficult to maintain tests. Thus, to ensure stability,
+ * we encapsulate the XPath creation logic here.
  * @since 0.11.0
  */
 final class JeoBaseXpath {
